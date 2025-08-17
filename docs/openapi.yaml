@@ -1,0 +1,17 @@
+openapi: 3.1.0
+
+info:
+  title: repo name
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://kdkdk
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
