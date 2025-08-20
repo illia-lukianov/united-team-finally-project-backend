@@ -21,6 +21,7 @@
     "http-errors": "^2.0.0",
     "joi": "^18.0.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
     "mongoose": "^8.17.1",
     "multer": "^2.0.2",
     "node": "^24.6.0",
