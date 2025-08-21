@@ -1,0 +1,13 @@
+type: object
+required:
+  - _id
+  - name
+properties:
+  _id:
+    type: string
+    description: Categories id
+    example: 6462a6cd4c3d0ddd28897f8d
+  name:
+    type: string
+    description: Categories name
+    example: Chicken
