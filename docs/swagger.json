@@ -1,7 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "repo name",
+    "title": "Tasteorama docs",
+    "description": "This is a documentation for Tasteorama website",
     "version": "1.0.0",
     "license": {
       "name": "Apache 2.0",
@@ -10,14 +11,222 @@
   },
   "servers": [
     {
-      "url": "https://kdkdk"
+      "url": "https://united-team-finally-project-backend.onrender.com"
     }
   ],
+  "tags": [
+    {
+      "name": "Ingredients",
+      "description": "Operation with ingredients"
+    },
+    {
+      "name": "Categories",
+      "description": "Operation with categories"
+    }
+  ],
+  "paths": {
+    "/ingredients": {
+      "get": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Get ingredients",
+        "operationId": "fetchIngredients",
+        "description": "Get ingredients",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched ingredients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found ingredients!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ingredients"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Get categories",
+        "operationId": "fetchCategories",
+        "description": "Get categories",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found categories!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/categories"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "ingredients": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "desc",
+          "image"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Ingredient id",
+            "example": "68a633139305d87498f2bb4d"
+          },
+          "name": {
+            "type": "string",
+            "description": "Ingredient name",
+            "example": "Chicken"
+          },
+          "desc": {
+            "type": "string",
+            "description": "Ingredient description",
+            "example": "The chicken is a type of domesticated fowl, a subspecies of the red junglefowl (Gallus gallus). It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011. There are more chickens in the world than any other bird or domesticated fowl. Humans keep chickens primarily as a source of food (consuming both their meat and eggs) and, less commonly, as pets. Originally raised for cockfighting or for special ceremonies, chickens were not kept for food until the Hellenistic period (4th-2nd centuries BC).\n"
+          },
+          "image": {
+            "type": "string",
+            "description": "The link to image",
+            "example": "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e365b.png"
+          }
+        }
+      },
+      "categories": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Categories id",
+            "example": "6462a6cd4c3d0ddd28897f8d"
+          },
+          "name": {
+            "type": "string",
+            "description": "Categories name",
+            "example": "Chicken"
+          }
+        }
+      }
+    },
+    "responses": {
+      "404": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

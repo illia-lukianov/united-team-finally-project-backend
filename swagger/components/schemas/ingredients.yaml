@@ -1,0 +1,28 @@
+type: object
+required:
+  - _id
+  - name
+  - desc
+  - image
+properties:
+  _id:
+    type: string
+    description: Ingredient id
+    example: 68a633139305d87498f2bb4d
+  name:
+    type: string
+    description: Ingredient name
+    example: Chicken
+  desc:
+    type: string
+    description: Ingredient description
+    example: >
+      The chicken is a type of domesticated fowl, a subspecies of the red junglefowl (Gallus gallus).
+      It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011.
+      There are more chickens in the world than any other bird or domesticated fowl.
+      Humans keep chickens primarily as a source of food (consuming both their meat and eggs) and, less commonly, as pets.
+      Originally raised for cockfighting or for special ceremonies, chickens were not kept for food until the Hellenistic period (4th-2nd centuries BC).
+  image:
+    type: string
+    description: The link to image
+    example: https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e365b.png
