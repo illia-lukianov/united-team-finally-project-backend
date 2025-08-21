@@ -1,4 +1,4 @@
 export async function registerController(request, response) {}
-export async function logInController(request, response) {}
-export async function refreshController(request, response) {}
-export async function logOutController(request, response) {}
+export async function loginController(request, response) {}
+export async function refreshUserSessionController(request, response) {}
+export async function logoutController(request, response) {}
