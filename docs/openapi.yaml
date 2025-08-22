@@ -1,15 +1,27 @@
 openapi: 3.1.0
 
 info:
-  title: repo name
+  title: Tasteorama docs
+  description: This is a documentation for Tasteorama website
   version: 1.0.0
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: https://kdkdk
-
+  - url: https://united-team-finally-project-backend.onrender.com
+tags: 
+  - name: Ingredients
+    description: Operation with ingredients
+  - name: Categories
+    description: Operation with categories
+paths:
+  /ingredients:
+    get:
+      $ref: '../swagger/paths/ingredients/get.yaml'
+  /categories:
+    get: 
+      $ref: '../swagger/paths/categories/get.yaml'
 components:
   securitySchemes:
     bearerAuth:
