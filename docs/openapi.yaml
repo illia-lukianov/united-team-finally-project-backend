@@ -10,18 +10,23 @@ info:
 
 servers:
   - url: https://united-team-finally-project-backend.onrender.com
-tags: 
-  - name: Ingredients
-    description: Operation with ingredients
+tags:
+  - name: Recipes
+    description: Operation with recipes
   - name: Categories
     description: Operation with categories
+  - name: Ingredients
+    description: Operation with ingredients
 paths:
+  /recipes:
+    get:
+      $ref: '../swagger/paths/recipes/get.yaml'
+  /categories:
+    get:
+      $ref: '../swagger/paths/categories/get.yaml'
   /ingredients:
     get:
       $ref: '../swagger/paths/ingredients/get.yaml'
-  /categories:
-    get: 
-      $ref: '../swagger/paths/categories/get.yaml'
 components:
   securitySchemes:
     bearerAuth:

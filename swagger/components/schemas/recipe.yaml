@@ -1,0 +1,69 @@
+type: object
+required:
+  # - _id
+  - title
+  - category
+  - owner
+  - area
+  - instruction
+  - description
+  #- thumb
+  - time
+  - ingredients
+  #- createdAt
+  #- updatedAt
+  #- cals
+properties:
+  _id:
+    type: string
+    description: Recipe id
+    example: 6462a8f74c3d0ddd28897fcd
+  title:
+    type: string
+    description: Recipe name
+    example: Battenberg Cake
+  category:
+    type: string
+    description: Category name
+    example: Dessert
+  owner:
+    type: string
+    description: Recipe author ID
+    example: 64c8d958249fae54bae90bb9
+  area:
+    type: string
+    description: Origin of the recipe
+    example: British
+  instruction:
+    type: string
+    description: Preparation description
+    example: Heat oven, put the cake, wait while baking
+  description:
+    type: string
+    description: Recipe description
+    example: Piece of cake
+  thumb:
+    type: string
+    description: The link to image
+    example: https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg
+  time:
+    type: integer
+    description: Cooking time
+    example: 15
+  ingredients:
+    type: array
+    items:
+      type: object
+      $ref: './ingredients.yaml'
+  createdAt:
+    description: Created at
+    type: string
+    example: 2025-08-05T15:29:49.877Z
+  updatedAt:
+    description: Updated last time at
+    type: string
+    example: 2025-08-05T15:29:49.877Z
+  cals:
+    type: integer
+    description: Calories amount
+    example: 666
