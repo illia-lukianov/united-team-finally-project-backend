@@ -1,12 +1,11 @@
 import crypto from "node:crypto";
 
 import createHttpError from "http-errors";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { getEnvVariables } from "../utils/getEnvVariables.js";
 
 import User from "../models/user.js";
 import Session, { sessionModel } from "../models/session.js";
-import { refreshUserSessionController } from "../controllers/auth.js";
 
 export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
@@ -15,9 +14,6 @@ export async function registerUser(payload) {
   }
   payload.password = await bcrypt.hash(payload.password, 10);
   return User.create(payload);
-
-  // const { accessToken, refreshToken } = generateTokens(newUser);
-  // return { id: newUser._id email: newUser.email, accessToken, refreshToken};
 }
 export async function loginUser(email, password) {
   const user = await User.findOne({ email });
@@ -32,32 +28,71 @@ export async function loginUser(email, password) {
     throw new createHttpError.Unauthorized("Email or password is incorrect");
   }
 
+  const accessToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    getEnvVariables("JWT_TOKEN"),
+    { expiresIn: "10m" }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id },
+    getEnvVariables("JWT_TOKEN"),
+    {
+      expiresIn: "7d",
+    }
+  );
+
   await Session.deleteOne({ userId: user._id });
 
   return Session.create({
     userId: user._id,
-    accessToken: crypto.randomBytes(30).toString("base64"),
-    refreshToken: crypto.randomBytes(30).toString("base64"),
+    accessToken,
+    refreshToken,
     accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
   });
 }
-export async function refreshUserSession(sessionId, refreshToken) {}
+export async function refreshUserSession(sessionId, refreshToken) {
+  const session = await Session.findById(sessionId);
+
+  if (session === null) {
+    throw new createHttpError.Unauthorized("Session not found");
+  }
+  if (session.refreshToken !== refreshToken) {
+    throw new createHttpError.Unauthorized("Refresh token us invalid");
+  }
+  if (session.refreshTokenValidUntil < new Date()) {
+    throw new createHttpError.Unauthorized("Refresh token is expired");
+  }
+
+  const user = await User.findById(session.userId);
+
+  if (user === null) {
+    throw new createHttpError.Unauthorized("User not found");
+  }
+
+  const newAccessToken = jwt.sign(
+    { userId: user._id, email: user.email },
+    getEnvVariables("JWT_TOKEN"),
+    { expiresIn: "10m" }
+  );
+  const newRefreshToken = jwt.sign(
+    { userId: user._id },
+    getEnvVariables("JWT_TOKEN"),
+    {
+      expiresIn: "7d",
+    }
+  );
+
+  await Session.deleteOne({ _id: session._id });
+
+  return Session.create({
+    userId: session.userId,
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+    accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  });
+}
 export async function logoutUser(session_id) {
   await sessionModel.deleteOne({ _id: session_id });
 }
-
-// function generateTokens(user) {
-//   const accessToken = jwt.sign(
-//     { id: user._id },
-//     process.env.ACCESS_TOKEN_SECRET,
-//     { expiresIn: "15m" }
-//   );
-//   const refreshToken = jwt.sign(
-//     { id: user._id },
-//     process.env.REFRESH_TOKEN_SECRET,
-//     { expiresIn: "7d" }
-//   );
-
-//   return { accessToken, refreshToken };
-// }

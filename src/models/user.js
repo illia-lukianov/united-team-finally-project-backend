@@ -15,8 +15,17 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    favourites: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
+      default: [],
+    },
   },
   {
+    timestamps: true,
     versionKey: false,
   }
 );
@@ -27,4 +36,4 @@ userSchema.methods.toJSON = function () {
   return object;
 };
 
-export const User = model("user", userSchema);
+export const User = model("User", userSchema, "users");
