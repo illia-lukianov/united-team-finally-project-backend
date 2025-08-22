@@ -11,7 +11,7 @@ const parseArray = (arr) => {
 export const parseFilterParams = (query) => {
   const { searchQuery, categories, ingredients } = query;
 
-  const parsedSearchQuery = parseArray(searchQuery);
+  const parsedSearchQuery = typeof searchQuery === 'string' ? searchQuery : '';
   const parsedCategories = parseArray(categories);
   const parsedIngredients = parseArray(ingredients);
 

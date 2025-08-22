@@ -3,9 +3,9 @@ import { getRecipes } from '../services/recipes.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 
-export const getAllRecipesController = async (req, res) => {
-  const paginationParams = parsePaginationParams(req.query); //page, perPage
-  const filterParams = parseFilterParams(req.query); //categories, ingredients
+export const getRecipesController = async (req, res) => {
+  const paginationParams = parsePaginationParams(req.query);
+  const filterParams = parseFilterParams(req.query);
   console.log('filterParams', filterParams);
 
   const result = await getRecipes({ ...paginationParams, ...filterParams });

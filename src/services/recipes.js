@@ -1,5 +1,5 @@
 import { ingredientModel } from '../models/ingredient.js';
-import { recipesCollection } from '../models/recipesModel.js';
+import { recipesCollection } from '../models/recipe.js';
 import calculatePaginationData from '../utils/calculatePaginationData.js';
 
 export const getRecipes = async (params) => {
@@ -39,12 +39,14 @@ export const getRecipes = async (params) => {
   }
 
   if (searchQuery.length !== 0) {
-    const ppp = searchQuery.join(' ');
-    console.log('ppp', ppp);
+    console.log('searchQuery', searchQuery);
 
     query.find({
-      $text: { $search: ppp },
+      title: { $regex: searchQuery, $options: 'i' },
     });
+    // query.find({
+    //   $text: { $search: searchQuery },
+    // });
   }
 
   const totalRecipes = await recipesCollection.find().merge(query).countDocuments();
