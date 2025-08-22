@@ -1,0 +1,25 @@
+[{
+  "_id": {
+    "$oid": "647495d0c825f1570b04182d"
+  },
+   "owner": {
+    "$oid": "64c8d958249fae54bae90bb9"
+  },
+    "testimonial": "Foodies has transformed my cooking experience! With its diverse recipe collection and user-friendly interface, I can easily find, save, and cook delicious meals for any occasion. From quick dinners to elaborate feasts, this app has become my go-to kitchen companion. Highly recommended!"
+},{
+  "_id": {
+    "$oid": "647495d0c825f1570b04182e"
+  },
+   "owner": {
+    "$oid": "64c8d958249fae54bae90bb8"
+  },
+  "testimonial": "Foodies is a must-have for any home cook! With its extensive recipe collection and easy-to-use interface, I've discovered new culinary delights and streamlined my meal planning. Cooking has never been this enjoyable!"
+},{
+  "_id": {
+    "$oid": "647495d0c825f1570b04182f"
+  },
+   "owner": {
+    "$oid": "64c8d958249fae54bae90bb7"
+  },
+  "testimonial": "Thank you for the wonderful recipe for feta pasta with tomatoes and basil. It turned out to be not only tasty, but also incredibly colorful. This has become a favorite family meal!"
+}]

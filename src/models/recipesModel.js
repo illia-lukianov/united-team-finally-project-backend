@@ -27,5 +27,7 @@ const recipesSchema = new Schema(
   },
 );
 
-recipesSchema.index({ name: 'text' });
+recipesSchema.index({ title: 'text' });
+// recipesSchema.index({ name: 'text', category: 1 });
 export const recipesCollection = model('Recipes', recipesSchema);
+recipesCollection.syncIndexes();
