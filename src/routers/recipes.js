@@ -9,39 +9,24 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
   addRecipeToFavouritesController,
   createRecipeController,
-  getAllRecipesController,
+  getOwnRecipesController,
   getFavouriteRecipesController,
+  getRecipeByIdController,
   removeRecipeFromFavouritesController,
 } from '../controllers/recipes.controller.js';
 
 const router = Router();
 
-router.get('/:recipeId', isValidId, ctrlWrapper());
+router.get('/:recipeId', isValidId, ctrlWrapper(getRecipeByIdController));
 
-router.post(
-  '/own',
-  validateBody(recipeSchema),
-  ctrlWrapper(createRecipeController),
-);
+router.post('/own', validateBody(recipeSchema), ctrlWrapper(createRecipeController));
 
-router.get('/own/:owner', ctrlWrapper(getAllRecipesController));
+router.get('/own/:owner', ctrlWrapper(getOwnRecipesController));
 
-router.patch(
-  '/favourites/:recipeId',
-  isValidId,
-  ctrlWrapper(addRecipeToFavouritesController),
-);
+router.patch('/:recipeId', isValidId, ctrlWrapper(addRecipeToFavouritesController));
 
-router.patch(
-  '/favourites/:recipeId',
-  isValidId,
-  ctrlWrapper(removeRecipeFromFavouritesController),
-);
+router.patch('/favourites/:recipeId', isValidId, ctrlWrapper(removeRecipeFromFavouritesController));
 
-router.get(
-  '/favourites',
-  isValidId,
-  ctrlWrapper(getFavouriteRecipesController),
-);
+router.get('/favourites', isValidId, ctrlWrapper(getFavouriteRecipesController));
 
 export default router;
