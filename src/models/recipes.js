@@ -2,40 +2,44 @@ import { model, Schema } from 'mongoose';
 
 const recipeSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
-    },
-    decr: {
-      type: String,
-      required: true,
-    },
-    cookiesTime: {
-      type: Number,
-      required: true,
-    },
-    cals: {
-      type: Number,
     },
     category: {
       type: String,
-      enum: [''],
       required: true,
     },
-    ingredient: {
+    owner: {
+      type: Schema.Types.ObjectId,
+      // required: true,
+    },
+    area: {
+      type: String,
+    },
+    instructions: {
       type: String,
       required: true,
     },
-    ingredientAmount: {
-      type: Number,
-      required: true,
-    },
-    instruction: {
+    description: {
       type: String,
       required: true,
     },
-    recipeImg: {
+    thumb: {
       type: String,
+      // required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    ingredients: {
+      type: [],
+      required: true,
+    },
+    cals: {
+      type: String,
+      default: null,
     },
   },
   {

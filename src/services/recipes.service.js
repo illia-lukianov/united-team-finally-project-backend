@@ -1,12 +1,12 @@
-import { recipeCollection } from '../db/models/recipes.js';
+import { recipeCollection } from '../models/recipes.js';
 
 export async function createRecipe(payload) {
   const recipe = recipeCollection.create(payload);
   return recipe;
 }
 
-export async function getAllRecipes(ownerId) {
-  const recipes = recipeCollection.find({ ownerId });
+export async function getAllRecipes(owner) {
+  const recipes = recipeCollection.find({ owner });
   return recipes;
 }
 

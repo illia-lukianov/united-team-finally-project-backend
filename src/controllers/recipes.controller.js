@@ -1,12 +1,13 @@
 import {
   addToFavourites,
   createRecipe,
+  getAllFavourites,
   getAllRecipes,
   removeFromFavourites,
 } from '../services/recipes.service.js';
 
 export async function createRecipeController(req, res) {
-  const recipe = await createRecipe(req.body);
+  const recipe = await createRecipe({ ...req.body, owner: req.user.id });
 
   res.status(201).json({
     status: 201,
@@ -16,11 +17,11 @@ export async function createRecipeController(req, res) {
 }
 
 export async function getAllRecipesController(req, res) {
-  const recipes = await getAllRecipes();
+  const recipes = await getAllRecipes(req.params.owner);
 
   res.json({
     status: 200,
-    message: 'Successfully fetched all recipes',
+    message: 'Successfully fetched recipes',
     data: recipes,
   });
 }
@@ -46,7 +47,7 @@ export async function removeRecipeFromFavouritesController(req, res) {
 }
 
 export async function getFavouriteRecipesController(req, res) {
-  const recipes = await getAllRecipes();
+  const recipes = await getAllFavourites();
 
   res.json({
     status: 200,
