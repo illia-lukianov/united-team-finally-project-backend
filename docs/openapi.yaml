@@ -10,7 +10,7 @@ info:
 
 servers:
   - url: https://united-team-finally-project-backend.onrender.com
-tags: 
+tags:
   - name: Ingredients
     description: Operation with ingredients
   - name: Categories
@@ -20,8 +20,24 @@ paths:
     get:
       $ref: '../swagger/paths/ingredients/get.yaml'
   /categories:
-    get: 
+    get:
       $ref: '../swagger/paths/categories/get.yaml'
+  /recipes:
+    get:
+      $ref: '../swagger/paths/recipes/get.yaml'
+    post:
+      $ref: '../swagger/paths/recipes/post.yaml'
+  /recipes/{id}:
+    get:
+      $ref: '../swagger/paths/recipes/{id}/get.yaml'
+    patch:
+      $ref: '../swagger/paths/recipes/{id}/patch.yaml'
+  /recipes/favourites:
+    get:
+      $ref: '../swagger/paths/recipes/favourites/get.yaml'
+  /recipes/favourites/{id}:
+    patch:
+      $ref: '../swagger/paths/recipes/favourites/{id}/patch.yaml'
 components:
   securitySchemes:
     bearerAuth:

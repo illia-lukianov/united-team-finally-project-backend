@@ -18,7 +18,7 @@ export async function getRecipeByIdController(req, res) {
 
   res.json({
     status: 200,
-    message: `Successfully get a recipe with id: ${req.params.recipeId}`,
+    message: `Successfully got the recipe with id: ${req.params.recipeId}`,
     data: recipe,
   });
 }

@@ -27,6 +27,6 @@ router.patch('/:id', isValidId, ctrlWrapper(addRecipeToFavouritesController));
 
 router.patch('/favourites/:id', isValidId, ctrlWrapper(removeRecipeFromFavouritesController));
 
-router.get('/favourites/:id', isValidId, ctrlWrapper(getFavouriteRecipesController));
+router.get('/favourites', isValidId, ctrlWrapper(getFavouriteRecipesController));
 
 export default router;
