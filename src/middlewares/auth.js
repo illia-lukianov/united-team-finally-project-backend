@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 
 import { User } from "../models/user.js";
-import { Session } from "../models/session.js";
+import { sessionModel } from "../models/session.js";
 
 export async function auth(request, response, next) {
   const { authorization } = request.headers;
@@ -16,7 +16,7 @@ export async function auth(request, response, next) {
     throw new createHttpError.Unauthorized("Please provide your access token");
   }
 
-  const session = await Session.findOne({ accessToken });
+  const session = await sessionModel.findOne({ accessToken });
 
   if (session === null) {
     throw new createHttpError.Unauthorized("Session not found");

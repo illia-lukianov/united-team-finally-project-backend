@@ -2,18 +2,20 @@ import crypto from "node:crypto";
 
 import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
-import { getEnvVariables } from "../utils/getEnvVariables.js";
+import bcrypt from "bcrypt";
+import getEnvVariables from "../utils/getEnvVariables.js";
 
-import User from "../models/user.js";
-import Session, { sessionModel } from "../models/session.js";
+import { User } from "../models/user.js";
+import { sessionModel } from "../models/session.js";
 
 export async function registerUser(payload) {
   const user = await User.findOne({ email: payload.email });
   if (user !== null) {
     throw new createHttpError.Conflict("Email is already in use");
   }
-  payload.password = await bcrypt.hash(payload.password, 10);
-  return User.create(payload);
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
+
+  return User.create({ ...payload, password: hashedPassword });
 }
 export async function loginUser(email, password) {
   const user = await User.findOne({ email });
@@ -30,20 +32,20 @@ export async function loginUser(email, password) {
 
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email },
-    getEnvVariables("JWT_TOKEN"),
+    getEnvVariables("SECRET_JWT"),
     { expiresIn: "10m" }
   );
   const refreshToken = jwt.sign(
     { userId: user._id },
-    getEnvVariables("JWT_TOKEN"),
+    getEnvVariables("SECRET_JWT"),
     {
       expiresIn: "7d",
     }
   );
 
-  await Session.deleteOne({ userId: user._id });
+  await sessionModel.deleteOne({ userId: user._id });
 
-  return Session.create({
+  return sessionModel.create({
     userId: user._id,
     accessToken,
     refreshToken,
@@ -52,7 +54,7 @@ export async function loginUser(email, password) {
   });
 }
 export async function refreshUserSession(sessionId, refreshToken) {
-  const session = await Session.findById(sessionId);
+  const session = await sessionModel.findById(sessionId);
 
   if (session === null) {
     throw new createHttpError.Unauthorized("Session not found");
@@ -72,20 +74,20 @@ export async function refreshUserSession(sessionId, refreshToken) {
 
   const newAccessToken = jwt.sign(
     { userId: user._id, email: user.email },
-    getEnvVariables("JWT_TOKEN"),
+    getEnvVariables("SECRET_JWT"),
     { expiresIn: "10m" }
   );
   const newRefreshToken = jwt.sign(
     { userId: user._id },
-    getEnvVariables("JWT_TOKEN"),
+    getEnvVariables("SECRET_JWT"),
     {
       expiresIn: "7d",
     }
   );
 
-  await Session.deleteOne({ _id: session._id });
+  await sessionModel.deleteOne({ _id: session._id });
 
-  return Session.create({
+  return sessionModel.create({
     userId: session.userId,
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,

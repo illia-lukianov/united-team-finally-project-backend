@@ -1,24 +1,25 @@
+import { User } from "../models/user.js";
 import {
   loginUser,
   logoutUser,
   refreshUserSession,
   registerUser,
-} from "../services/auth";
+} from "../services/auth.js";
 
 export async function registerController(request, response) {
   const user = await registerUser(request.body);
-
+  console.log("User created:", user);
   const session = await loginUser(request.body.email, request.body.password);
+  console.log("Session created:", session);
+  // response.cookie("sessionId", session._id, {
+  //   httpOnly: true,
+  //   expire: session.refreshTokenValidUntil,
+  // });
 
-  response.cookie("sessionId", session._id, {
-    httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-  });
-
-  response.cookie("refreshToken", session.refreshToken, {
-    httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-  });
+  // response.cookie("refreshToken", session.refreshToken, {
+  //   httpOnly: true,
+  //   expire: session.refreshTokenValidUntil,
+  // });
 
   response.json({
     id: user._id,
