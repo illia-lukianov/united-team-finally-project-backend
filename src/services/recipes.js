@@ -18,7 +18,7 @@ export const getRecipes = async (params) => {
     //all from ingredients exist
     query.find({ 'ingredients.id': { $all: ingredientsIds } });
 
-    //one from ingredients exist
+    //one from ingredients exist ///
     // query.find({
     //   ingredients: { $elemMatch: { id: { $in: ingredientsIds } } },
     // });
