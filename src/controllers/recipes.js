@@ -10,7 +10,7 @@ export const getRecipesController = async (req, res) => {
 
   const result = await getRecipes({ ...paginationParams, ...filterParams });
 
-  if (result.data.length === 0) throw createHttpError(404, 'No matches found');
+  if (result.data.length === 0) throw createHttpError(404, 'No recipes found');
 
   res.json({
     status: 200,

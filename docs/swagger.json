@@ -16,6 +16,10 @@
   ],
   "tags": [
     {
+      "name": "Users",
+      "description": "Operation with users"
+    },
+    {
       "name": "Recipes",
       "description": "Operation with recipes"
     },
@@ -29,6 +33,63 @@
     }
   ],
   "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get current user's info",
+        "operationId": "getUserInfo",
+        "description": "Get user's info",
+        "security": [],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "cookie",
+            "description": "Session ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68839a81420dc1826aea2c3f"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully found user's info!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found user's info!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/recipes": {
       "get": {
         "tags": [
@@ -247,6 +308,54 @@
       }
     },
     "schemas": {
+      "user": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "email"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's id",
+            "example": "6462a6cd4c3d0ddd28897f8d"
+          },
+          "name": {
+            "description": "User's name",
+            "type": "string",
+            "example": "John Dou"
+          },
+          "email": {
+            "description": "User's email",
+            "type": "string",
+            "example": "example@mail.com"
+          },
+          "avatar": {
+            "description": "User's avatar",
+            "type": "string",
+            "example": "https://link.to/photo.jpg"
+          },
+          "favourites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Recipe id",
+              "example": "6462a8f74c3d0ddd28897fcd"
+            }
+          },
+          "createdAt": {
+            "description": "Created at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          },
+          "updatedAt": {
+            "description": "Updated last time at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          }
+        }
+      },
       "ingredients": {
         "type": "object",
         "required": [
@@ -381,6 +490,37 @@
       }
     },
     "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bad Request"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "404": {
         "description": "Not found",
         "content": {

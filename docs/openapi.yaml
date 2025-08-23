@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://united-team-finally-project-backend.onrender.com
 tags:
+  - name: Users
+    description: Operation with users
   - name: Recipes
     description: Operation with recipes
   - name: Categories
@@ -18,6 +20,9 @@ tags:
   - name: Ingredients
     description: Operation with ingredients
 paths:
+  /users:
+    get:
+      $ref: '../swagger/paths/users/get.yaml'
   /recipes:
     get:
       $ref: '../swagger/paths/recipes/get.yaml'
