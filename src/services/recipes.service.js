@@ -11,20 +11,24 @@ export async function createRecipe(payload) {
   return recipe;
 }
 
-export async function getOwnRecipes(owner) {
-  const recipes = recipesCollection.find({ owner });
+export async function getOwnRecipes(userId) {
+  const recipes = recipesCollection.find({ owner: userId });
   return recipes;
 }
 
 export async function addToFavourites(recipeId, userId) {
   const user = await userModel.findById(userId);
   user.favourites.push(recipeId);
+  await user.save();
   return user.favourites;
 }
 
 export async function removeFromFavourites(recipeId, userId) {
   const user = await userModel.findById(userId);
-  user.favourites.filter((recipe) => recipe !== recipeId);
+  user.favourites.filter((recipe) => {
+    return recipe.toString() !== recipeId;
+  });
+  await user.save();
   return user.favourites;
 }
 

@@ -17,16 +17,16 @@ import {
 
 const router = Router();
 
-router.get('/:recipeId', isValidId, ctrlWrapper(getRecipeByIdController));
+router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController));
 
-router.post('/own', validateBody(recipeSchema), ctrlWrapper(createRecipeController));
+router.post('/', validateBody(recipeSchema), ctrlWrapper(createRecipeController));
 
-router.get('/own/:owner', ctrlWrapper(getOwnRecipesController));
+router.get('/', ctrlWrapper(getOwnRecipesController));
 
-router.patch('/:recipeId', isValidId, ctrlWrapper(addRecipeToFavouritesController));
+router.patch('/:id', isValidId, ctrlWrapper(addRecipeToFavouritesController));
 
-router.patch('/favourites/:recipeId', isValidId, ctrlWrapper(removeRecipeFromFavouritesController));
+router.patch('/favourites/:id', isValidId, ctrlWrapper(removeRecipeFromFavouritesController));
 
-router.get('/favourites', isValidId, ctrlWrapper(getFavouriteRecipesController));
+router.get('/favourites/:id', isValidId, ctrlWrapper(getFavouriteRecipesController));
 
 export default router;

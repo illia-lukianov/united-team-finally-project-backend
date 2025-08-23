@@ -14,7 +14,7 @@ export async function getRecipeByIdController(req, res) {
 
   const recipe = await getRecipeById(req.params.recipeId);
 
-  if (!recipe) throw createHttpError('404', 'Recipe not found');
+  if (!recipe) throw createHttpError(404, 'Recipe not found');
 
   res.json({
     status: 200,
@@ -24,6 +24,9 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
+  // req.user = {
+  //   id: '64c8d958249fae54bae90bb9',
+  // };
   const recipe = await createRecipe({ ...req.body, owner: req.user.id });
 
   res.status(201).json({
@@ -34,7 +37,12 @@ export async function createRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
+  // req.user = {
+  //   id: '64c8d958249fae54bae90bb9',
+  // };
   const recipes = await getOwnRecipes(req.user.id);
+
+  if (!recipes) throw createHttpError(404, 'Recipes not found');
 
   res.json({
     status: 200,
@@ -44,7 +52,12 @@ export async function getOwnRecipesController(req, res) {
 }
 
 export async function addRecipeToFavouritesController(req, res) {
+  // req.user = {
+  //   id: '64c8d958249fae54bae90bb9',
+  // };
   const favourites = await addToFavourites(req.params.id, req.user.id);
+
+  if (!favourites) throw createHttpError(404, 'Recipe not found');
 
   res.json({
     status: 200,
@@ -54,16 +67,24 @@ export async function addRecipeToFavouritesController(req, res) {
 }
 
 export async function removeRecipeFromFavouritesController(req, res) {
+  // req.user = {
+  //   id: '64c8d958249fae54bae90bb9',
+  // };
   const favourites = await removeFromFavourites(req.params.id, req.user.id);
+
+  if (!favourites) throw createHttpError(404, 'Recipe not found');
 
   res.json({
     status: 200,
-    message: `Recipe with id: ${req.params.id} is successfully removed to favourites`,
+    message: `Recipe with id: ${req.params.id} is successfully removed from favourites`,
     data: favourites,
   });
 }
 
 export async function getFavouriteRecipesController(req, res) {
+  // req.user = {
+  //   id: '64c8d958249fae54bae90bb9',
+  // };
   const recipes = await getFavouriteRecipes(req.user.id);
 
   res.json({
