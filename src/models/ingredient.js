@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const ingredientSchema = mongoose.Schema(
   {
@@ -18,7 +18,11 @@ const ingredientSchema = mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
-export const ingredientModel = mongoose.model('Ingredient', ingredientSchema);
+export const ingredientModel = mongoose.model(
+  "Ingredient",
+  ingredientSchema,
+  "ingredients"
+);
