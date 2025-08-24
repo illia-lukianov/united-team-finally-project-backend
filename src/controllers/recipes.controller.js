@@ -28,9 +28,6 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
   const photo = req.file;
   let photoURL;
 
@@ -52,9 +49,6 @@ export async function createRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-  // req.user = {
-  //   id: '64c8d958249fae54bae90bb9',
-  // };
   const recipes = await getOwnRecipes(req.user.id);
 
   if (!recipes) throw createHttpError(404, 'Recipes not found');
@@ -67,9 +61,6 @@ export async function getOwnRecipesController(req, res) {
 }
 
 export async function addRecipeToFavouritesController(req, res) {
-  // req.user = {
-  //   id: '64c8d958249fae54bae90bb9',
-  // };
   const favourites = await addToFavourites(req.params.id, req.user.id);
 
   if (!favourites) throw createHttpError(404, 'Recipe not found');
@@ -82,9 +73,6 @@ export async function addRecipeToFavouritesController(req, res) {
 }
 
 export async function removeRecipeFromFavouritesController(req, res) {
-  // req.user = {
-  //   id: '64c8d958249fae54bae90bb9',
-  // };
   const favourites = await removeFromFavourites(req.params.id, req.user.id);
 
   if (!favourites) throw createHttpError(404, 'Recipe not found');
@@ -97,9 +85,6 @@ export async function removeRecipeFromFavouritesController(req, res) {
 }
 
 export async function getFavouriteRecipesController(req, res) {
-  // req.user = {
-  //   id: '64c8d958249fae54bae90bb9',
-  // };
   const recipes = await getFavouriteRecipes(req.user.id);
 
   res.json({

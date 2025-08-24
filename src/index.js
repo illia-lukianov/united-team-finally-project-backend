@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import { TMP_UPLOAD_DIR, UPLOAD_DIR } from './constans/index.js';
 
 import { createDirIfNotExists } from './utils/createDirIfNotExists.js';
