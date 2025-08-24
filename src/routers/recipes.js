@@ -13,6 +13,7 @@ import {
   getFavouriteRecipesController,
   getRecipeByIdController,
   removeRecipeFromFavouritesController,
+  deleteRecipeController,
 } from '../controllers/recipes.controller.js';
 
 const router = Router();
@@ -20,6 +21,8 @@ const router = Router();
 router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController));
 
 router.post('/', upload.single('thumb'), validateBody(recipeSchema), ctrlWrapper(createRecipeController));
+
+router.delete('/:id', isValidId, ctrlWrapper(deleteRecipeController));
 
 router.get('/', ctrlWrapper(getOwnRecipesController));
 

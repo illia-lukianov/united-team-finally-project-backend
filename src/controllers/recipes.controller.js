@@ -6,6 +6,7 @@ import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import {
   addToFavourites,
   createRecipe,
+  deleteRecipe,
   getFavouriteRecipes,
   getOwnRecipes,
   getRecipeById,
@@ -28,6 +29,9 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
+  req.user = {
+    id: '64c8d958249fae54bae90bb9',
+  };
   const photo = req.file;
   let photoURL;
 
@@ -48,6 +52,17 @@ export async function createRecipeController(req, res) {
   });
 }
 
+export async function deleteRecipeController(req, res) {
+  req.user = {
+    id: '64c8d958249fae54bae90bb9',
+  };
+  const recipe = await deleteRecipe(req.params.id, req.user.id);
+
+  if (!recipe) throw createHttpError(404, 'Recipe not found');
+
+  res.sendStatus(204);
+}
+
 export async function getOwnRecipesController(req, res) {
   const recipes = await getOwnRecipes(req.user.id);
 
@@ -61,6 +76,9 @@ export async function getOwnRecipesController(req, res) {
 }
 
 export async function addRecipeToFavouritesController(req, res) {
+  req.user = {
+    id: '64c8d958249fae54bae90bb9',
+  };
   const favourites = await addToFavourites(req.params.id, req.user.id);
 
   if (!favourites) throw createHttpError(404, 'Recipe not found');
