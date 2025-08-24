@@ -8,6 +8,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import router from './routers/index.js';
 import cookieParser from 'cookie-parser';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import { UPLOAD_DIR } from './constans/index.js';
 
 const PORT = getEnvVariables('PORT') ?? '3000';
 
@@ -30,6 +31,7 @@ export default function setupServer() {
       level: 'error',
     }),
   );
+  app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
   app.use('/api-docs', swaggerDocs());
   app.use(router);

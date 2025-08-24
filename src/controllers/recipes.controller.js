@@ -1,5 +1,8 @@
 import createHttpError from 'http-errors';
 
+import getEnvVariables from '../utils/getEnvVariables.js';
+import uploadToCloudinary from '../utils/uploadToCloudinary.js';
+
 import {
   addToFavourites,
   createRecipe,
@@ -8,6 +11,7 @@ import {
   getRecipeById,
   removeFromFavourites,
 } from '../services/recipes.service.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 export async function getRecipeByIdController(req, res) {
   console.log(req.params.recipeId);
@@ -24,10 +28,21 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
-  // req.user = {
-  //   id: '64c8d958249fae54bae90bb9',
-  // };
-  const recipe = await createRecipe({ ...req.body, owner: req.user.id });
+  req.user = {
+    id: '64c8d958249fae54bae90bb9',
+  };
+  const photo = req.file;
+  let photoURL;
+
+  if (photo) {
+    if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === true) {
+      photoURL = await uploadToCloudinary(photo);
+    } else {
+      photoURL = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const recipe = await createRecipe({ ...req.body, owner: req.user.id, thumb: photoURL });
 
   res.status(201).json({
     status: 201,

@@ -26,11 +26,15 @@ export const recipeSchema = Joi.object({
     'string.base': 'Category name must be a string!',
     'any.required': 'Field must not be empty!',
   }),
+  area: Joi.string().required().messages({
+    'string.base': 'Area name must be a string!',
+    'any.required': 'Field must not be empty!',
+  }),
   ingredients: Joi.array().required().messages({
     'array.base': 'Ingredient list must be an array!',
     'any.required': 'Array must not be empty!',
   }),
-  instructions: Joi.string().max(1200).required().messages({
+  instruction: Joi.string().max(1200).required().messages({
     'string.base': 'Recipe instruction must be a string!',
     'string.max': 'Recipe instruction is too long!',
     'any.required': 'Field must not be empty!',

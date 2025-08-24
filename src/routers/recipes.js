@@ -3,8 +3,8 @@ import { Router } from 'express';
 import isValidId from '../middlewares/isValidId.js';
 import validateBody from '../middlewares/validateBody.js';
 import { recipeSchema } from '../validation/recipe.js';
-
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { upload } from '../middlewares/upload.js';
 
 import {
   addRecipeToFavouritesController,
@@ -19,7 +19,7 @@ const router = Router();
 
 router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController));
 
-router.post('/', validateBody(recipeSchema), ctrlWrapper(createRecipeController));
+router.post('/', upload.single('thumb'), validateBody(recipeSchema), ctrlWrapper(createRecipeController));
 
 router.get('/', ctrlWrapper(getOwnRecipesController));
 
