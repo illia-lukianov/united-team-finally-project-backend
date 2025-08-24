@@ -13,7 +13,7 @@ requestBody:
         properties:
           email:
             type: string
-            example: youremail@example.com
+            example: youremail@gmail.com
           password:
             type: string
             example: yourpassword
@@ -40,7 +40,7 @@ responses:
                   example: 64c1e4b3a2f72c30e3d2a123
                 email:
                   type: string
-                  example: youremail@example.com
+                  example: youremail@gmail.com
                 name:
                   type: string
                   example: John
