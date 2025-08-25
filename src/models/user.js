@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
@@ -20,14 +20,14 @@ const userSchema = new Schema(
       default: null,
     },
     favourites: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
+      type: [{ type: Schema.Types.ObjectId, ref: 'Recipe' }],
       default: [],
     },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 userSchema.methods.toJSON = function () {
@@ -36,4 +36,4 @@ userSchema.methods.toJSON = function () {
   return object;
 };
 
-export const User = model("User", userSchema, "users");
+export const userModel = model('User', userSchema, 'users');

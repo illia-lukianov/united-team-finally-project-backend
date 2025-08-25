@@ -16,36 +16,51 @@
   ],
   "tags": [
     {
-      "name": "Ingredients",
-      "description": "Operation with ingredients"
+      "name": "Users",
+      "description": "Operation with users"
+    },
+    {
+      "name": "Recipes",
+      "description": "Operation with recipes"
     },
     {
       "name": "Categories",
       "description": "Operation with categories"
+    },
+    {
+      "name": "Ingredients",
+      "description": "Operation with ingredients"
     }
   ],
   "paths": {
-    "/ingredients": {
+    "/users": {
       "get": {
         "tags": [
-          "Ingredients"
+          "Users"
         ],
-        "summary": "Get ingredients",
-        "operationId": "fetchIngredients",
-        "description": "Get ingredients",
+        "summary": "Get current user's info",
+        "operationId": "getUserInfo",
+        "description": "Get user's info",
         "security": [],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "cookie",
+            "description": "Session ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68839a81420dc1826aea2c3f"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Successfully fetched ingredients",
+            "description": "Successfully found user's info!",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
                   "properties": {
                     "status": {
                       "type": "integer",
@@ -53,10 +68,128 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found ingredients!"
+                      "example": "Successfully found user's info!"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/ingredients"
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/recipes": {
+      "get": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Get recipes",
+        "operationId": "getAllRecipes",
+        "description": "Get recipes",
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 12
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "description": "Filter by categories. You can specify many categories with coma.",
+            "schema": {
+              "type": "string",
+              "example": "Dessert,Seafood"
+            }
+          },
+          {
+            "name": "ingredients",
+            "in": "query",
+            "description": "Get recipe that contain all of ingredients. You can specify many ingredients with coma.",
+            "schema": {
+              "type": "string",
+              "example": "Capers,Potatoes,Eggs"
+            }
+          },
+          {
+            "name": "searchQuery",
+            "in": "query",
+            "description": "Search recipe by title.",
+            "schema": {
+              "type": "string",
+              "example": "BANANA"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully get recipes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found recipes!"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    },
+                    "page": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "perPage": {
+                      "type": "integer",
+                      "example": 12
+                    },
+                    "totalItems": {
+                      "type": "integer",
+                      "example": 45
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "example": 4
+                    },
+                    "hasNextPage": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "hasPreviousPage": {
+                      "type": "boolean",
+                      "example": false
                     }
                   }
                 }
@@ -118,6 +251,53 @@
           }
         }
       }
+    },
+    "/ingredients": {
+      "get": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Get ingredients",
+        "operationId": "fetchIngredients",
+        "description": "Get ingredients",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched ingredients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found ingredients!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ingredients"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -128,6 +308,54 @@
       }
     },
     "schemas": {
+      "user": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "email"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's id",
+            "example": "6462a6cd4c3d0ddd28897f8d"
+          },
+          "name": {
+            "description": "User's name",
+            "type": "string",
+            "example": "John Dou"
+          },
+          "email": {
+            "description": "User's email",
+            "type": "string",
+            "example": "example@mail.com"
+          },
+          "avatar": {
+            "description": "User's avatar",
+            "type": "string",
+            "example": "https://link.to/photo.jpg"
+          },
+          "favourites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Recipe id",
+              "example": "6462a8f74c3d0ddd28897fcd"
+            }
+          },
+          "createdAt": {
+            "description": "Created at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          },
+          "updatedAt": {
+            "description": "Updated last time at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          }
+        }
+      },
       "ingredients": {
         "type": "object",
         "required": [
@@ -159,6 +387,88 @@
           }
         }
       },
+      "recipe": {
+        "type": "object",
+        "required": [
+          "title",
+          "category",
+          "owner",
+          "area",
+          "instruction",
+          "description",
+          "time",
+          "ingredients"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Recipe id",
+            "example": "6462a8f74c3d0ddd28897fcd"
+          },
+          "title": {
+            "type": "string",
+            "description": "Recipe name",
+            "example": "Battenberg Cake"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category name",
+            "example": "Dessert"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Recipe author ID",
+            "example": "64c8d958249fae54bae90bb9"
+          },
+          "area": {
+            "type": "string",
+            "description": "Origin of the recipe",
+            "example": "British"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "Preparation description",
+            "example": "Heat oven, put the cake, wait while baking"
+          },
+          "description": {
+            "type": "string",
+            "description": "Recipe description",
+            "example": "Piece of cake"
+          },
+          "thumb": {
+            "type": "string",
+            "description": "The link to image",
+            "example": "https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg"
+          },
+          "time": {
+            "type": "integer",
+            "description": "Cooking time",
+            "example": 15
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/ingredients"
+            }
+          },
+          "createdAt": {
+            "description": "Created at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          },
+          "updatedAt": {
+            "description": "Updated last time at",
+            "type": "string",
+            "example": "2025-08-05T15:29:49.877Z"
+          },
+          "cals": {
+            "type": "integer",
+            "description": "Calories amount",
+            "example": 666
+          }
+        }
+      },
       "categories": {
         "type": "object",
         "required": [
@@ -180,6 +490,37 @@
       }
     },
     "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bad Request"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "404": {
         "description": "Not found",
         "content": {
