@@ -1,35 +1,75 @@
 tags:
   - Recipes
-summary: Get all recipes
-operationId: getRecipes
-description: Get all recipes
-security:
-  - bearerAuth: []
-
+summary: Get recipes
+operationId: getAllRecipes
+description: Get recipes
+security: []
+parameters:
+  - name: page
+    in: query
+    schema:
+      type: integer
+      example: 1
+  - name: perPage
+    in: query
+    schema:
+      type: integer
+      example: 12
+  - name: categories
+    in: query
+    description: Filter by categories. Comma-separated list.
+    schema:
+      type: string
+      example: Dessert,Seafood
+  - name: ingredients
+    in: query
+    description: Get recipes that contain all of the ingredients. Comma-separated list.
+    schema:
+      type: string
+      example: Capers,Potatoes,Eggs
+  - name: searchQuery
+    in: query
+    description: Search recipe by title.
+    schema:
+      type: string
+      example: BANANA
 responses:
   '200':
-    description: Successfully fetched recipes
+    description: Successfully retrieved recipes
     content:
       application/json:
         schema:
           type: object
-          required:
-            - status
-            - message
-            - data
           properties:
             status:
               type: integer
               example: 200
             message:
               type: string
-              example: Successfully fetched recipes
+              example: Successfully found recipes!
             data:
               type: array
               items:
-                $ref: ../../components/schemas/recipe.yaml
-
-  '401':
-    $ref: ../../components/responses/401.yaml
+                $ref: '../../components/schemas/recipe.yaml'
+            page:
+              type: integer
+              example: 1
+            perPage:
+              type: integer
+              example: 12
+            totalItems:
+              type: integer
+              example: 45
+            totalPages:
+              type: integer
+              example: 4
+            hasNextPage:
+              type: boolean
+              example: true
+            hasPreviousPage:
+              type: boolean
+              example: false
+  '404':
+    $ref: ../../components/responses/404.yaml
   '500':
     $ref: ../../components/responses/500.yaml

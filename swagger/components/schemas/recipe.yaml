@@ -15,55 +15,60 @@ properties:
   _id:
     type: string
     description: Recipe id
-    example: 68a9d93bc172cbefce0cde82
+    example: 6462a8f74c3d0ddd28897fcd
   title:
     type: string
-    description: Recipe title
-    example: Carbonara
+    description: Recipe name
+    example: Battenberg Cake
   category:
     type: string
-    description: Recipe category
-    example: Pasta
+    description: Category name
+    example: Dessert
   owner:
     type: string
-    description: Owner id
-    example: 68a9d93bc172cbefce0cde82
+    description: Recipe author ID
+    example: 64c8d958249fae54bae90bb9
   area:
     type: string
-    description: Recipe area
-    example: Italian
+    description: Origin of the recipe
+    example: British
   instruction:
     type: string
-    description: Instructions to the recipe
+    description: Preparation description
+    example: Heat oven, put the cake, wait while baking
   description:
     type: string
-    description: Description of the recipe
+    description: Recipe description
+    example: Piece of cake
+  thumb:
+    type: string
+    description: Path to the recipe image
+    example: https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg
   time:
-    type: number
-    description: Cooking time in minutes
-    example: 60
+    type: integer
+    description: Cooking time (in minutes)
+    example: 15
   ingredients:
     type: array
+    description: List of recipe ingredients
     items:
       type: object
       required:
-        - id
+        - ingredient
         - measure
       properties:
-        id:
+        ingredient:
           type: string
           description: Ingredient id
           example: 68a9d93bc172cbefce0cde82
         measure:
           type: string
           description: Measures of the ingredient
+          example: "100 g"
   cals:
     type: number
     description: Amount of calories
     example: 60
-  thumb:
-    type: string
-    description: Path to the recipe image
   createdAt:
     type: string
     format: date-time
