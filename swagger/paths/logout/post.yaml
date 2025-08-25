@@ -1,0 +1,9 @@
+tags:
+  - Auth
+summary: Logout user and clear session
+description: Requires cookie `sessionId`
+responses:
+  "204":
+    description: Successfully logged out
+  "401":
+    $ref: "../../components/responses/401.yaml"

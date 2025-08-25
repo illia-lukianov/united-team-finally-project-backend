@@ -1,0 +1,46 @@
+tags:
+  - Auth
+summary: Register a new user
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - name
+          - email
+          - password
+        properties:
+          name:
+            type: string
+            example: John Doe
+          email:
+            type: string
+            example: youremail@example.com
+          password:
+            type: string
+            example: '12345678'
+responses:
+  '200':
+    description: Successfully registered
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: User id
+              example: 64c1e4b3a2f72c30e3d2a123
+            email:
+              type: string
+              example: youremail@example.com
+            accessToken:
+              type: string
+            refreshToken:
+              type: string
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '409':
+    description: Email already in use

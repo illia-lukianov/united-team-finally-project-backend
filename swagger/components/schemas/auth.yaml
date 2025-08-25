@@ -1,0 +1,35 @@
+type: object
+required:
+  - _id
+  - name
+  - email
+  - password
+  - avatar
+  - favourites
+properties:
+  _id:
+    type: string
+    description: User id
+    example: 68a9b94211851c01e25653ac
+  name:
+    type: string
+    description: User name
+    example: John
+  email:
+    type: string
+    description: User password
+    example: youremail@gmail.com
+  password:
+    type: string
+    description: User password
+    example: "12345678"
+  avatar:
+    type: string
+    description: User avatar
+    example: https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e365b.png
+  favourites:
+    type: array
+    description: List of favourite recipes of user
+    items:
+      type: string
+      example: 64e123ab4567cd89ef012345
