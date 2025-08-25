@@ -23,9 +23,6 @@ paths:
   /users:
     get:
       $ref: '../swagger/paths/users/get.yaml'
-  /recipes:
-    get:
-      $ref: '../swagger/paths/recipes/get.yaml'
   /categories:
     get:
       $ref: '../swagger/paths/categories/get.yaml'

@@ -12,8 +12,8 @@ export const recipeSchema = Joi.object({
     'any.required': 'Description field must not be empty!',
   }),
   thumb: Joi.string().max(200).messages({
-    'string.base': 'Recipe thumb must be a string!',
-    'string.max': 'Recipe thumb is too long!',
+      'string.base': 'Recipe thumb must be a string!',
+      'string.max': 'Recipe thumb is too long!',
   }),
   time: Joi.string().min(1).max(360).required().messages({
     'string.base': 'Cooking time must be a string in minutes!',
@@ -35,16 +35,16 @@ export const recipeSchema = Joi.object({
     'any.required': 'Area name field must not be empty!',
   }),
   ingredients: Joi.array().items(
-    Joi.object({
-      id: Joi.string().required().messages({
-        'string.base': 'Ingredient ID must be a string!',
-        'any.required': 'Ingredient ID is required!',
-      }),
-      measure: Joi.string().required().messages({
-        'string.base': 'Ingredient measure must be a string!',
-        'any.required': 'Ingredient measure is required!',
-      }),
-  })),
+      Joi.object({
+        id: Joi.string().required().messages({
+          'string.base': 'Ingredient ID must be a string!',
+          'any.required': 'Ingredient ID is required!',
+        }),
+        measure: Joi.string().required().messages({
+          'string.base': 'Ingredient measure must be a string!',
+          'any.required': 'Ingredient measure is required!',
+        }),
+    })),
   instruction: Joi.string().max(1200).required().messages({
     'string.base': 'Recipe instruction must be a string!',
     'string.max': 'Recipe instruction is too long!',

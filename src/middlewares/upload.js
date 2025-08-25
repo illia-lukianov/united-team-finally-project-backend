@@ -1,15 +1,17 @@
 import multer from 'multer';
-
-import { TMP_UPLOAD_DIR } from '../constans/index.js';
+import path from 'node:path';
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, TMP_UPLOAD_DIR);
+    cb(null, path.resolve('src/tmp'));
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.originalname + '-' + uniqueSuffix);
+    const uniquePrefix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const safeName = file.originalname.replace(/\s+/g, '_');
+    cb(null, `${uniquePrefix}_${safeName}`);
   },
 });
 
-export const upload = multer({ storage });
+export const upload = multer({
+  storage,
+});

@@ -3,7 +3,7 @@ export const normalizeRecipeArray = (recipeArray) =>
     ...recipe,
     ingredients: recipe.ingredients.map(({ measure, id }) => ({
       measure,
-      ingredient: id,
+      ... id,
     })),
   }));
 
@@ -11,6 +11,6 @@ export const normalizeRecipe = (recipe) => ({
   ...recipe,
   ingredients: recipe.ingredients.map(({ measure, id }) => ({
     measure,
-    ingredient: id,
+    ... id,
   })),
 });
