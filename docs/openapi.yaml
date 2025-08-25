@@ -32,6 +32,8 @@ paths:
       $ref: '../swagger/paths/recipes/{id}/get.yaml'
     patch:
       $ref: '../swagger/paths/recipes/{id}/patch.yaml'
+    delete:
+      $ref: '../swagger/paths/recipes/{id}/delete.yaml'
   /recipes/favourites:
     get:
       $ref: '../swagger/paths/recipes/favourites/get.yaml'

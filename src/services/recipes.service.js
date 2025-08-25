@@ -1,5 +1,6 @@
 import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
+import { removeRecipeFromOthersFavourites } from '../utils/removeRecipeFromOthersFavourites.js';
 
 export async function getRecipeById(recipeId) {
   const recipe = recipesCollection.findById(recipeId);
@@ -13,14 +14,7 @@ export async function createRecipe(payload) {
 
 export async function deleteRecipe(recipeId, userId) {
   const users = await userModel.find();
-  users.forEach(async (user) => {
-    if (user.favourites.includes(recipeId)) {
-      user.favourites.filter((recipe) => {
-        return recipe.toString() !== recipeId;
-      });
-      await user.save();
-    }
-  });
+  removeRecipeFromOthersFavourites(users, recipeId);
   recipesCollection.findOneAndDelete({ _id: recipeId, owner: userId });
 }
 

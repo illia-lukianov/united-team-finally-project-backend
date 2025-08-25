@@ -64,9 +64,9 @@ export async function deleteRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-  const recipes = await getOwnRecipes(req.user.id);
+  let recipes = await getOwnRecipes(req.user.id);
 
-  if (!recipes) throw createHttpError(404, 'Recipes not found');
+  if (!recipes) recipes = [];
 
   res.json({
     status: 200,

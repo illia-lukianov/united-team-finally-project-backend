@@ -39,4 +39,4 @@ export const recipeSchema = Joi.object({
     'string.max': 'Recipe instruction is too long!',
     'any.required': 'Field must not be empty!',
   }),
-});
+}).required();
