@@ -18,7 +18,7 @@ requestBody:
             type: string
             example: yourpassword
 responses:
-  "200":
+  '200':
     description: Login successful
     content:
       application/json:
@@ -44,5 +44,7 @@ responses:
                 name:
                   type: string
                   example: John
-  "401":
-    $ref: "../../components/responses/401.yaml"
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'

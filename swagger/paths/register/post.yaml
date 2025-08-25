@@ -20,9 +20,9 @@ requestBody:
             example: youremail@example.com
           password:
             type: string
-            example: "12345678"
+            example: '12345678'
 responses:
-  "200":
+  '200':
     description: Successfully registered
     content:
       application/json:
@@ -40,5 +40,7 @@ responses:
               type: string
             refreshToken:
               type: string
-  "409":
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '409':
     description: Email already in use
