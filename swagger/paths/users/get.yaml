@@ -1,0 +1,47 @@
+tags:
+  - Users
+summary: Get current user's info
+operationId: getUserInfo
+description: Get user's info
+security: []
+parameters:
+  - name: 'sessionId'
+    in: cookie
+    description: 'Session ID'
+    required: true
+    schema:
+      type: string
+      example: '68839a81420dc1826aea2c3f'
+  # - name: 'refreshToken'
+  #   in: cookie
+  #   description: 'Refresh Token'
+  #   required: true
+  #   schema:
+  #     type: string
+  #     example: '34sVJKsKgp6n2flGmUvnMPvrBs0pyZ2HtK%2BDhmSG'
+responses:
+  '200':
+    description: Successfully found user's info!
+    content:
+      application/json:
+        schema:
+          type: object
+          # required:
+          #   - status
+          #   - message
+          #   - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully found user's info!
+            data:
+              $ref: ../../components/schemas/user.yaml
+  '400':
+    $ref: ../../components/responses/400.yaml
+  '404':
+    $ref: ../../components/responses/404.yaml
+  '500':
+    $ref: ../../components/responses/500.yaml
