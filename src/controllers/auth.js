@@ -11,17 +11,21 @@ export async function registerController(request, response) {
   console.log("User created:", user);
   const session = await loginUser(request.body.email, request.body.password);
   console.log("Session created:", session);
-  // response.cookie("sessionId", session._id, {
-  //   httpOnly: true,
-  //   expire: session.refreshTokenValidUntil,
-  // });
 
-  // response.cookie("refreshToken", session.refreshToken, {
-  //   httpOnly: true,
-  //   expire: session.refreshTokenValidUntil,
-  // });
+  response.cookie("sessionId", session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+
+  response.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
 
   response.json({
+    status: 201,
+    message: "Successfully registered",
+    data: user,
     id: user._id,
     email: user.email,
     accessToken: session.accessToken,
