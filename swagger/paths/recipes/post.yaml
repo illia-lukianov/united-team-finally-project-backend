@@ -1,0 +1,99 @@
+tags:
+  - Recipes
+summary: Create new recipe
+operationId: createRecipe
+description: Create new recipe
+security:
+  - bearerAuth: []
+
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        required:
+          - title
+          - category
+          - owner
+          - area
+          - instruction
+          - description
+          - time
+          - ingredients
+        properties:
+          title:
+            type: string
+            description: Recipe title
+            example: Carbonara
+          category:
+            type: string
+            description: Recipe category
+            example: Pasta
+          owner:
+            type: string
+            description: Owner id
+            example: 68a9d93bc172cbefce0cde82
+          area:
+            type: string
+            description: Recipe area
+            example: Italian
+          instruction:
+            type: string
+            description: Instructions to the recipe
+          description:
+            type: string
+            description: Description of the recipe
+          time:
+            type: string
+            description: Cooking time in minutes
+            example: 60
+          ingredients:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - measure
+              properties:
+                id:
+                  type: string
+                  description: Ingredient id
+                  example: 68a9d93bc172cbefce0cde82
+                measure:
+                  type: string
+                  description: Measures of the ingredient
+          cals:
+            type: number
+            description: Amount of calories
+            example: 60
+          thumb:
+            type: string
+            format: binary
+            description: Photo of the recipe
+
+responses:
+  '201':
+    description: Successfully created a recipe
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully created a recipe
+            data:
+              $ref: ../../components/schemas/recipe.yaml
+
+  '400':
+    $ref: ../../components/responses/400.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml
+  '500':
+    $ref: ../../components/responses/500.yaml

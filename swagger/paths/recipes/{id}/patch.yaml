@@ -1,0 +1,49 @@
+tags:
+  - Recipes
+summary: Add recipe to favourites
+operationId: addRecipeToFavourites
+description: Add recipe to favourites
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+      example: 68a9e1eac172cbefce0cde83
+
+responses:
+  '200':
+    description: Recipe with id:68a9e1eac172cbefce0cde83 is successfully added to favourites
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Recipe with id:68a9e1eac172cbefce0cde83 is successfully added to favourites
+            data:
+              type: array
+              description: Array of favourite recipes id's
+              items:
+                type: string
+                example: 68a9e1eac172cbefce0cde83
+
+  '400':
+    $ref: ../../../components/responses/400.yaml
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml
