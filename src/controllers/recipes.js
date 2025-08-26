@@ -16,6 +16,7 @@ import {
 import { normalizeRecipe } from '../utils/normalizeRecipeFunc.js';
 import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import uploadToStorage from '../utils/uploadToStorage.js';
+import fs from 'node:fs/promises';
 
 export const getRecipesController = async (req, res) => {
   const paginationParams = parsePaginationParams(req.query);
@@ -34,7 +35,6 @@ export const getRecipesController = async (req, res) => {
 };
 
 export async function getRecipeByIdController(req, res) {
-
   const recipe = await getRecipeById(req.params.id);
 
   if (!recipe) throw createHttpError(404, 'Recipe not found');
@@ -53,10 +53,12 @@ export async function createRecipeController(req, res) {
 
   let photoURL = null;
 
+  console.log('🚀 ~ createRecipeController ~ req.file:', req.file);
   if (req.file) {
-    if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === "true") {
+    const UPLOAD_TO_CLOUDINARY = getEnvVariables('UPLOAD_TO_CLOUDINARY');
+
+    if (UPLOAD_TO_CLOUDINARY === 'true') {
       photoURL = await uploadToCloudinary(req.file.path);
-      await fs.unlink(req.file.path);
     } else {
       photoURL = await uploadToStorage(req.file);
     }
@@ -82,14 +84,16 @@ export async function deleteRecipeController(req, res) {
 
 export async function getOwnRecipesController(req, res) {
   req.user = {
-   id: '64c8d958249fae54bae90bb9',
+    id: '64c8d958249fae54bae90bb9',
   };
 
-  const recipes = await getOwnRecipes(req.user.id) || [];
+  const recipes = await getOwnRecipes(req.user.id);
   res.json({
     status: 200,
     message: 'Successfully fetched recipes',
-    data: recipes,
+    data: {
+      ...recipes,
+    },
   });
 }
 
@@ -97,9 +101,9 @@ export async function addRecipeToFavouritesController(req, res) {
   req.user = {
     id: '64c8d958249fae54bae90bb9',
   };
-  const receipeId = req.params.id
+  const receipeId = req.params.id;
   const favourites = await addToFavourites(req.params.id, req.user.id);
-  const matches = favourites.filter(q => q.equals(receipeId)).length;
+  const matches = favourites.filter((q) => q.equals(receipeId)).length;
 
   switch (matches) {
     case 0:
@@ -117,6 +121,9 @@ export async function addRecipeToFavouritesController(req, res) {
 }
 
 export async function removeRecipeFromFavouritesController(req, res) {
+  req.user = {
+    id: '64c8d958249fae54bae90bb9',
+  };
   const favourites = await removeFromFavourites(req.params.id, req.user.id);
 
   if (!favourites) throw createHttpError(404, 'Recipe not found');

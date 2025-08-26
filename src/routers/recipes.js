@@ -21,7 +21,7 @@ router.get('/own', ctrlWrapper(getOwnRecipesController)); // ✅
 
 router.get('/favourites', ctrlWrapper(getFavouriteRecipesController)); // ✅
 
-router.patch('/favourites/:id', isValidId, ctrlWrapper(removeRecipeFromFavouritesController)); // ✅
+router.delete('/favourites/:id', isValidId, ctrlWrapper(removeRecipeFromFavouritesController)); // ✅
 
 router.get('/', ctrlWrapper(getRecipesController)); // ✅
 
@@ -29,7 +29,7 @@ router.post('/', upload.single('thumb'), validateBody(recipeSchema), ctrlWrapper
 
 router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController)); // ✅
 
-router.patch('/:id', isValidId, ctrlWrapper(addRecipeToFavouritesController)); // ✅
+router.patch('/favourites/:id', isValidId, ctrlWrapper(addRecipeToFavouritesController)); // ✅
 
 router.delete('/:id', isValidId, ctrlWrapper(deleteRecipeController));
 

@@ -30,7 +30,12 @@ export const getRecipes = async (params) => {
   const skip = (page - 1) * perPage;
   const totalRecipes = await recipesCollection.find().merge(query).countDocuments();
 
-  const recipes = (await query.skip(skip).limit(limit).populate({ path: 'ingredients.id', select: '-_id' }).lean().exec())
+  const recipes = await query
+    .skip(skip)
+    .limit(limit)
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
 
   const paginationData = calculatePaginationData(totalRecipes, page, perPage);
 
@@ -59,7 +64,12 @@ export async function deleteRecipe(recipeId, userId) {
 }
 
 export async function getOwnRecipes(userId) {
-  return recipesCollection.find({ owner: userId });
+  const recipes = await recipesCollection
+    .find({ owner: userId })
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+  return { items: normalizeRecipeArray(recipes) };
 }
 
 export async function addToFavourites(recipeId, userId) {
