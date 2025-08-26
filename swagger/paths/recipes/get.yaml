@@ -17,13 +17,13 @@ parameters:
       example: 12
   - name: categories
     in: query
-    description: Filter by categories. You can specify many categories with coma.
+    description: Filter by categories. Comma-separated list.
     schema:
       type: string
       example: Dessert,Seafood
   - name: ingredients
     in: query
-    description: Get recipe that contain all of ingredients. You can specify many ingredients with coma.
+    description: Get recipes that contain all of the ingredients. Comma-separated list.
     schema:
       type: string
       example: Capers,Potatoes,Eggs
@@ -35,15 +35,11 @@ parameters:
       example: BANANA
 responses:
   '200':
-    description: Successfully get recipes
+    description: Successfully retrieved recipes
     content:
       application/json:
         schema:
           type: object
-          # required:
-          #   - status
-          #   - message
-          #   - data
           properties:
             status:
               type: integer
@@ -54,7 +50,6 @@ responses:
             data:
               type: array
               items:
-                type: object
                 $ref: '../../components/schemas/recipe.yaml'
             page:
               type: integer

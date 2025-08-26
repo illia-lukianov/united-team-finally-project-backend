@@ -1,18 +1,16 @@
 type: object
 required:
-  # - _id
+  - _id
   - title
   - category
   - owner
   - area
   - instruction
   - description
-  #- thumb
   - time
   - ingredients
-  #- createdAt
-  #- updatedAt
-  #- cals
+  - createdAt
+  - updatedAt
 properties:
   _id:
     type: string
@@ -44,26 +42,38 @@ properties:
     example: Piece of cake
   thumb:
     type: string
-    description: The link to image
+    description: Path to the recipe image
     example: https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg
   time:
     type: integer
-    description: Cooking time
+    description: Cooking time (in minutes)
     example: 15
   ingredients:
     type: array
+    description: List of recipe ingredients
     items:
       type: object
-      $ref: './ingredients.yaml'
-  createdAt:
-    description: Created at
-    type: string
-    example: 2025-08-05T15:29:49.877Z
-  updatedAt:
-    description: Updated last time at
-    type: string
-    example: 2025-08-05T15:29:49.877Z
+      required:
+        - ingredient
+        - measure
+      properties:
+        ingredient:
+          type: string
+          description: Ingredient id
+          example: 68a9d93bc172cbefce0cde82
+        measure:
+          type: string
+          description: Measures of the ingredient
+          example: "100 g"
   cals:
-    type: integer
-    description: Calories amount
-    example: 666
+    type: number
+    description: Amount of calories
+    example: 60
+  createdAt:
+    type: string
+    format: date-time
+    example: 2025-07-30T17:51:59.589+00:00
+  updatedAt:
+    type: string
+    format: date-time
+    example: 2025-07-30T17:51:59.589+00:00

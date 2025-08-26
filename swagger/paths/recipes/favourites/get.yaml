@@ -1,0 +1,35 @@
+tags:
+  - Recipes
+summary: Get favourite recipes
+operationId: getFavouriteRecipes
+description: Get favourite recipes
+security:
+  - bearerAuth: []
+
+responses:
+  '200':
+    description: Successfully fetched favourite recipes
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully fetched favourite recipes
+            data:
+              type: array
+              items:
+                $ref: ../../../components/schemas/recipe.yaml
+
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml
