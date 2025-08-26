@@ -7,12 +7,10 @@ import { userModel } from '../models/user.js';
 export const getRecipes = async (params) => {
   const { page, perPage, categories = [], ingredients = [], searchQuery = '' } = params;
 
-  const filter = {};
   const recipesQuery = recipesCollection.find();
 
   if (categories.length > 0) {
     recipesQuery.where({ category: { $in: categories } });
-    filter.category = { $in: categories };
   }
 
   if (ingredients.length > 0) {
@@ -33,7 +31,7 @@ export const getRecipes = async (params) => {
 
   const recipes = await recipesQuery
     .skip(skip)
-    .limit(perPage)
+    .limit(limit)
     .populate({ path: 'ingredients.id', select: '-_id' })
     .lean()
     .exec();
