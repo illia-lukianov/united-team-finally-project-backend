@@ -13,7 +13,6 @@ import {
   getRecipeById,
   removeFromFavourites,
 } from '../services/recipes.js';
-import { normalizeRecipe } from '../utils/normalizeRecipeFunc.js';
 import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import uploadToStorage from '../utils/uploadToStorage.js';
 import fs from 'node:fs/promises';
@@ -42,7 +41,7 @@ export async function getRecipeByIdController(req, res) {
   res.json({
     status: 200,
     message: `Successfully got the recipe with id: ${req.params.recipeId}`,
-    data: normalizeRecipe(recipe),
+    data: recipe,
   });
 }
 
@@ -144,6 +143,6 @@ export async function getFavouriteRecipesController(req, res) {
   res.json({
     status: 200,
     message: 'Successfully fetched favourite recipes',
-    data: favouriteRecipes,
+    data: { items: favouriteRecipes.items },
   });
 }

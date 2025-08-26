@@ -1,6 +1,6 @@
 import { ingredientModel } from '../models/ingredient.js';
 import calculatePaginationData from '../utils/calculatePaginationData.js';
-import { normalizeRecipeArray } from '../utils/normalizeRecipeFunc.js';
+import { normalizeRecipe, normalizeRecipeArray } from '../utils/normalizeRecipeFunc.js';
 import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
 
@@ -43,7 +43,12 @@ export const getRecipes = async (params) => {
 };
 
 export async function getRecipeById(recipeId) {
-  return recipesCollection.findById(recipeId).populate({ path: 'ingredients.id', select: '-_id' }).lean().exec();
+  const recipe = await recipesCollection
+    .findById(recipeId)
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+  return normalizeRecipe(recipe);
 }
 
 export async function createRecipe(payload) {
@@ -89,6 +94,18 @@ export async function removeFromFavourites(recipeId, userId) {
 }
 
 export async function getFavouriteRecipes(userId) {
-  const { favourites } = await userModel.findById(userId, 'favourites');
-  return favourites ?? [];
+  const { favourites } = await userModel
+    .findById(userId)
+    .populate({
+      path: 'favourites',
+      select: '',
+      populate: {
+        path: 'ingredients.id',
+        select: '-_id',
+      },
+    })
+    .lean()
+    .exec();
+
+  return { items: normalizeRecipeArray(favourites) };
 }
