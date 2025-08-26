@@ -1,0 +1,26 @@
+tags:
+  - Recipes
+summary: Delete recipe by id
+operationId: deleteRecipeById
+description: Delete recipe by id
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+      example: 68a9e1eac172cbefce0cde83
+
+responses:
+  '204':
+    description: Successfully deleted recipe with id:68a9e1eac172cbefce0cde83
+
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml

@@ -1,0 +1,43 @@
+tags:
+  - Recipes
+summary: Get recipe by id
+operationId: getRecipeById
+description: Get recipe by id
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+      example: 68a9e1eac172cbefce0cde83
+
+responses:
+  '200':
+    description: Successfully got the recipe with id:68a9e1eac172cbefce0cde83
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully got the recipe with id:68a9e1eac172cbefce0cde83
+            data:
+              $ref: ../../../components/schemas/recipe.yaml
+
+  '401':
+    $ref: ../../../components/responses/401.yaml
+  '404':
+    $ref: ../../../components/responses/404.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml
