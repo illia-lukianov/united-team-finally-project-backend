@@ -5,38 +5,38 @@ import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
 
 export const getRecipes = async (params) => {
-  const { page, perPage, categories, ingredients, searchQuery } = params;
+  const { page, perPage, categories = [], ingredients = [], searchQuery = '' } = params;
 
-  const query = recipesCollection.find();
+  const filter = {};
+  const recipesQuery = recipesCollection.find();
 
-  if (categories.length !== 0) query.find({ category: { $in: categories } });
-
-  if (ingredients.length !== 0) {
-    const ingredientsIds = await ingredientModel
-      .find({ name: { $in: ingredients } }, { _id: 1 })
-      .lean()
-      .then((ingredients) => ingredients.map((ingredient) => ingredient._id));
-
-    query.find({ 'ingredients.id': { $all: ingredientsIds } });
+  if (categories.length > 0) {
+    recipesQuery.where({ category: { $in: categories } });
+    filter.category = { $in: categories };
   }
 
-  if (searchQuery.length !== 0) {
-    query.find({
+  if (ingredients.length > 0) {
+    recipesQuery.where({ 'ingredients.id': { $all: ingredients } });
+  }
+
+  if (searchQuery.trim() !== '') {
+    recipesQuery.where({
       title: { $regex: searchQuery, $options: 'i' },
     });
   }
 
-  const limit = perPage;
   const skip = (page - 1) * perPage;
-  const totalRecipes = await recipesCollection.find().merge(query).countDocuments();
 
-  const recipes = await query
+  const totalRecipes = await recipesCollection.find().merge(recipesQuery).countDocuments();
+
+  const limit = perPage;
+
+  const recipes = await recipesQuery
     .skip(skip)
-    .limit(limit)
+    .limit(perPage)
     .populate({ path: 'ingredients.id', select: '-_id' })
     .lean()
     .exec();
-
   const paginationData = calculatePaginationData(totalRecipes, page, perPage);
 
   return { data: normalizeRecipeArray(recipes), paginationData };
