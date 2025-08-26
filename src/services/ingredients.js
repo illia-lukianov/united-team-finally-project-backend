@@ -1,5 +1,5 @@
-import { ingredientModel } from "../models/ingredient.js";
+import { ingredientModel } from '../models/ingredient.js';
 
-export function fetchIngredientsService () {
-    return ingredientModel.find({}, { name: 1 , _id: 0});
+export function fetchIngredientsService() {
+  return ingredientModel.find({}, { name: 1 });
 }
