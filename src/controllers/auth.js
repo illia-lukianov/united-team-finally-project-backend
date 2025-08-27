@@ -9,12 +9,14 @@ export async function registerController(request, response) {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.json({
@@ -38,12 +40,14 @@ export async function loginController(request, response) {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.json({
@@ -68,12 +72,14 @@ export async function refreshUserSessionController(request, response) {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
     sameSite: "None",
+    secure: true,
   });
 
   response.json({
