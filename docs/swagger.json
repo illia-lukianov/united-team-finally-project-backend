@@ -90,6 +90,53 @@
         }
       }
     },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Get categories",
+        "operationId": "fetchCategories",
+        "description": "Get categories",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found categories!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/categories"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/recipes": {
       "get": {
         "tags": [
@@ -119,7 +166,7 @@
           {
             "name": "categories",
             "in": "query",
-            "description": "Filter by categories. You can specify many categories with coma.",
+            "description": "Filter by categories. Comma-separated list.",
             "schema": {
               "type": "string",
               "example": "Dessert,Seafood"
@@ -128,7 +175,7 @@
           {
             "name": "ingredients",
             "in": "query",
-            "description": "Get recipe that contain all of ingredients. You can specify many ingredients with coma.",
+            "description": "Get recipes that contain all of the ingredients. Comma-separated list.",
             "schema": {
               "type": "string",
               "example": "Capers,Potatoes,Eggs"
@@ -146,7 +193,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully get recipes",
+            "description": "Successfully retrieved recipes",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,7 +210,6 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "type": "object",
                         "$ref": "#/components/schemas/recipe"
                       }
                     },
@@ -203,20 +249,171 @@
             "$ref": "#/components/responses/500"
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Create new recipe",
+        "operationId": "createRecipe",
+        "description": "Create new recipe",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "title",
+                  "category",
+                  "owner",
+                  "area",
+                  "instruction",
+                  "description",
+                  "time",
+                  "ingredients"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Recipe title",
+                    "example": "Carbonara"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Recipe category",
+                    "example": "Pasta"
+                  },
+                  "owner": {
+                    "type": "string",
+                    "description": "Owner id",
+                    "example": "68a9d93bc172cbefce0cde82"
+                  },
+                  "area": {
+                    "type": "string",
+                    "description": "Recipe area",
+                    "example": "Italian"
+                  },
+                  "instruction": {
+                    "type": "string",
+                    "description": "Instructions to the recipe"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the recipe"
+                  },
+                  "time": {
+                    "type": "string",
+                    "description": "Cooking time in minutes",
+                    "example": 60
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "measure"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Ingredient id",
+                          "example": "68a9d93bc172cbefce0cde82"
+                        },
+                        "measure": {
+                          "type": "string",
+                          "description": "Measures of the ingredient"
+                        }
+                      }
+                    }
+                  },
+                  "cals": {
+                    "type": "number",
+                    "description": "Amount of calories",
+                    "example": 60
+                  },
+                  "thumb": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Photo of the recipe"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created a recipe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully created a recipe"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/recipe"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
       }
     },
-    "/categories": {
+    "/recipes/{id}": {
       "get": {
         "tags": [
-          "Categories"
+          "Recipes"
         ],
-        "summary": "Get categories",
-        "operationId": "fetchCategories",
-        "description": "Get categories",
-        "security": [],
+        "summary": "Get recipe by id",
+        "operationId": "getRecipeById",
+        "description": "Get recipe by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68a9e1eac172cbefce0cde83"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Successfully fetched categories",
+            "description": "Successfully got the recipe with id:68a9e1eac172cbefce0cde83",
             "content": {
               "application/json": {
                 "schema": {
@@ -233,15 +430,251 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found categories!"
+                      "example": "Successfully got the recipe with id:68a9e1eac172cbefce0cde83"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/categories"
+                      "$ref": "#/components/schemas/recipe"
                     }
                   }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Add recipe to favourites",
+        "operationId": "addRecipeToFavourites",
+        "description": "Add recipe to favourites",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68a9e1eac172cbefce0cde83"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe with id:68a9e1eac172cbefce0cde83 is successfully added to favourites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Recipe with id:68a9e1eac172cbefce0cde83 is successfully added to favourites"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Array of favourite recipes id's",
+                      "items": {
+                        "type": "string",
+                        "example": "68a9e1eac172cbefce0cde83"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Delete recipe by id",
+        "operationId": "deleteRecipeById",
+        "description": "Delete recipe by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68a9e1eac172cbefce0cde83"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted recipe with id:68a9e1eac172cbefce0cde83"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/recipes/favourites": {
+      "get": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Get favourite recipes",
+        "operationId": "getFavouriteRecipes",
+        "description": "Get favourite recipes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched favourite recipes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully fetched favourite recipes"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/recipe"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/recipes/favourites/{id}": {
+      "patch": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Remove recipe from favourites",
+        "operationId": "removeRecipeFromFavourites",
+        "description": "Remove recipe from favourites",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "68a9e1eac172cbefce0cde83"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe with id:68a9e1eac172cbefce0cde83 is successfully removed from favourites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Recipe with id:68a9e1eac172cbefce0cde83 is successfully removed from favourites"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "Array of favourite recipes id's",
+                      "items": {
+                        "type": "string",
+                        "example": "68a9e1eac172cbefce0cde83"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
           },
           "404": {
             "$ref": "#/components/responses/404"
@@ -356,40 +789,29 @@
           }
         }
       },
-      "ingredients": {
+      "categories": {
         "type": "object",
         "required": [
           "_id",
-          "name",
-          "desc",
-          "image"
+          "name"
         ],
         "properties": {
           "_id": {
             "type": "string",
-            "description": "Ingredient id",
-            "example": "68a633139305d87498f2bb4d"
+            "description": "Categories id",
+            "example": "6462a6cd4c3d0ddd28897f8d"
           },
           "name": {
             "type": "string",
-            "description": "Ingredient name",
+            "description": "Categories name",
             "example": "Chicken"
-          },
-          "desc": {
-            "type": "string",
-            "description": "Ingredient description",
-            "example": "The chicken is a type of domesticated fowl, a subspecies of the red junglefowl (Gallus gallus). It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011. There are more chickens in the world than any other bird or domesticated fowl. Humans keep chickens primarily as a source of food (consuming both their meat and eggs) and, less commonly, as pets. Originally raised for cockfighting or for special ceremonies, chickens were not kept for food until the Hellenistic period (4th-2nd centuries BC).\n"
-          },
-          "image": {
-            "type": "string",
-            "description": "The link to image",
-            "example": "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e365b.png"
           }
         }
       },
       "recipe": {
         "type": "object",
         "required": [
+          "_id",
           "title",
           "category",
           "owner",
@@ -397,7 +819,9 @@
           "instruction",
           "description",
           "time",
-          "ingredients"
+          "ingredients",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "_id": {
@@ -437,54 +861,82 @@
           },
           "thumb": {
             "type": "string",
-            "description": "The link to image",
+            "description": "Path to the recipe image",
             "example": "https://ftp.goit.study/img/so-yummy/preview/Battenberg%20Cake.jpg"
           },
           "time": {
             "type": "integer",
-            "description": "Cooking time",
+            "description": "Cooking time (in minutes)",
             "example": 15
           },
           "ingredients": {
             "type": "array",
+            "description": "List of recipe ingredients",
             "items": {
               "type": "object",
-              "$ref": "#/components/schemas/ingredients"
+              "required": [
+                "ingredient",
+                "measure"
+              ],
+              "properties": {
+                "ingredient": {
+                  "type": "string",
+                  "description": "Ingredient id",
+                  "example": "68a9d93bc172cbefce0cde82"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "Measures of the ingredient",
+                  "example": "100 g"
+                }
+              }
             }
           },
+          "cals": {
+            "type": "number",
+            "description": "Amount of calories",
+            "example": 60
+          },
           "createdAt": {
-            "description": "Created at",
             "type": "string",
-            "example": "2025-08-05T15:29:49.877Z"
+            "format": "date-time",
+            "example": "2025-07-30T17:51:59.589+00:00"
           },
           "updatedAt": {
-            "description": "Updated last time at",
             "type": "string",
-            "example": "2025-08-05T15:29:49.877Z"
-          },
-          "cals": {
-            "type": "integer",
-            "description": "Calories amount",
-            "example": 666
+            "format": "date-time",
+            "example": "2025-07-30T17:51:59.589+00:00"
           }
         }
       },
-      "categories": {
+      "ingredients": {
         "type": "object",
         "required": [
           "_id",
-          "name"
+          "name",
+          "desc",
+          "image"
         ],
         "properties": {
           "_id": {
             "type": "string",
-            "description": "Categories id",
-            "example": "6462a6cd4c3d0ddd28897f8d"
+            "description": "Ingredient id",
+            "example": "68a633139305d87498f2bb4d"
           },
           "name": {
             "type": "string",
-            "description": "Categories name",
+            "description": "Ingredient name",
             "example": "Chicken"
+          },
+          "desc": {
+            "type": "string",
+            "description": "Ingredient description",
+            "example": "The chicken is a type of domesticated fowl, a subspecies of the red junglefowl (Gallus gallus). It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011. There are more chickens in the world than any other bird or domesticated fowl. Humans keep chickens primarily as a source of food (consuming both their meat and eggs) and, less commonly, as pets. Originally raised for cockfighting or for special ceremonies, chickens were not kept for food until the Hellenistic period (4th-2nd centuries BC).\n"
+          },
+          "image": {
+            "type": "string",
+            "description": "The link to image",
+            "example": "https://ftp.goit.study/img/so-yummy/ingredients/640c2dd963a319ea671e365b.png"
           }
         }
       }
@@ -515,6 +967,30 @@
                   "items": {
                     "type": "string"
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized Error"
                 }
               }
             }
