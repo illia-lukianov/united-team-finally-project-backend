@@ -10,9 +10,9 @@ const parseSortOrder = (sortOrder) => {
 };
 
 const parseSortBy = (sortBy) => {
-  const keysOfContact = ['title', 'time', 'cals', 'popularity', 'createdAt', 'updatedAt'];
+  const keysOfRecipes = ['title', 'time', 'cals', 'popularity', 'createdAt', 'updatedAt'];
 
-  if (keysOfContact.includes(sortBy)) {
+  if (keysOfRecipes.includes(sortBy)) {
     return sortBy;
   }
 
