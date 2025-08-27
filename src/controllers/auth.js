@@ -19,10 +19,10 @@ export async function registerController(request, response) {
     status: 201,
     message: 'Successfully registered',
     data: {
-      user: {
-        id: user._id,
-        email: user.email,
-      },
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      // },
       accessToken: session.accessToken,
     },
   });
@@ -47,13 +47,13 @@ export async function loginController(request, response) {
     message: 'User successfully registered and login',
     data: {
       accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-    },
-    user: {
-      id: user._id,
-      email: user.email,
-      name: user.name,
-    },
+    //   refreshToken: session.refreshToken,
+    // },
+    // user: {
+    //   id: user._id,
+    //   email: user.email,
+    //   name: user.name,
+    }, 
   });
 }
 export async function refreshUserSessionController(request, response) {

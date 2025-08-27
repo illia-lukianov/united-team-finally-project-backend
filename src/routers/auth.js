@@ -8,13 +8,16 @@ import {
   refreshUserSessionController,
   registerController,
 } from "../controllers/auth.js";
+
 const router = express.Router();
+
 router.post(
-  "/register",
+  '/register',
   validateBody(registerUserSchema),
   ctrlWrapper(registerController)
 );
-router.post("/login", validateBody(loginSchema), ctrlWrapper(loginController));
-router.post("/refresh", ctrlWrapper(refreshUserSessionController));
-router.post("/logout", ctrlWrapper(logoutController));
+router.post('/login', validateBody(loginSchema), ctrlWrapper(loginController));
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+router.post('/logout', ctrlWrapper(logoutController));
+
 export default router;
