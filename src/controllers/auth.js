@@ -1,5 +1,12 @@
 import { userModel } from '../models/user.js';
-import { loginUser, logoutUser, refreshUserSession, registerUser } from '../services/auth.js';
+import {
+  loginUser,
+  logoutUser,
+  refreshUserSession,
+  registerUser,
+  requestResetEmailSchema,
+  resetPwd,
+} from '../services/auth.js';
 
 export async function registerController(request, response) {
   const user = await registerUser(request.body);
@@ -19,10 +26,10 @@ export async function registerController(request, response) {
     status: 201,
     message: 'Successfully registered',
     data: {
-      user: {
-        id: user._id,
-        email: user.email,
-      },
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      // },
       accessToken: session.accessToken,
     },
   });
@@ -47,12 +54,12 @@ export async function loginController(request, response) {
     message: 'User successfully registered and login',
     data: {
       accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-    },
-    user: {
-      id: user._id,
-      email: user.email,
-      name: user.name,
+      //   refreshToken: session.refreshToken,
+      // },
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      //   name: user.name,
     },
   });
 }
@@ -87,4 +94,24 @@ export async function logoutController(request, response) {
   response.clearCookie('refreshToken');
 
   response.status(204).end();
+}
+
+export async function requestResetEmailController(request, response) {
+  await requestResetEmailSchema(request.body.email);
+
+  response.json({
+    status: 200,
+    message: 'Message sent successfully',
+  });
+}
+
+export async function resetPwdController(request, response) {
+  const { token, password } = request.body;
+
+  await resetPwd(token, password);
+
+  response.json({
+    status: 200,
+    message: 'Reset password successfully',
+  });
 }

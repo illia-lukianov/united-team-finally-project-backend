@@ -7,6 +7,7 @@ import getEnvVariables from '../utils/getEnvVariables.js';
 
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
+import { sendMail } from '../utils/sendMail.js';
 
 export async function registerUser(payload) {
   const user = await userModel.findOne({ email: payload.email });
@@ -85,4 +86,46 @@ export async function refreshUserSession(sessionId, refreshToken) {
 }
 export async function logoutUser(session_id) {
   await sessionModel.deleteOne({ _id: session_id });
+}
+
+export async function requestResetEmailSchema(email) {
+  const user = await userModel.findById({ email });
+
+  if (user === null) {
+    throw new createHttpError.NotFound('User was not found');
+  }
+
+  const token = jwt.sign({ sub: user._id, name: user.name }, getEnvVariables('SECRET_JWT'), {
+    expiresIn: '10m',
+  });
+
+  await sendMail({
+    to: email,
+    subject: 'Reset password',
+    html: `<p>To reset password please click the <a href:"http://localhost:8080/reset-password/${token}">Link</a></p>`,
+  });
+}
+
+export async function resetPwd(token, passsword) {
+  try {
+    const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
+
+    const user = await userModel.findById(decoded.sub);
+
+    if (user === null) {
+      throw new createHttpError.NotFound('User was not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      throw new createHttpError.Unauthorized('Token is expired');
+    }
+    if (error.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Token is unauthorized');
+    }
+    throw error;
+  }
 }

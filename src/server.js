@@ -22,7 +22,7 @@ export default function setupServer() {
       transport: {
         target: 'pino-pretty',
       },
-      level: 'error',
+      // level: "error",
     }),
   );
   app.use('/auth/uploads', express.static(UPLOAD_DIR));

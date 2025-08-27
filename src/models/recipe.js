@@ -6,7 +6,7 @@ const recipesSchema = new Schema(
     category: { type: String, required: true },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     area: { type: String, required: true },
-    instruction: { type: String, required: true },
+    instructions: { type: String, required: true },
     description: { type: String, required: true },
     cals: { type: Number, default: null },
     thumb: { type: String, default: null },
