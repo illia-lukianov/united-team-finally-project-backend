@@ -2,6 +2,7 @@ import createHttpError from 'http-errors';
 import { getRecipes } from '../services/recipes.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 import getEnvVariables from '../utils/getEnvVariables.js';
 import path from 'node:path';
 import {
@@ -19,8 +20,9 @@ import uploadToStorage from '../utils/uploadToStorage.js';
 export const getRecipesController = async (req, res) => {
   const paginationParams = parsePaginationParams(req.query);
   const filterParams = parseFilterParams(req.query);
+  const sortParams = parseSortParams(req.query);
 
-  const result = await getRecipes({ ...paginationParams, ...filterParams });
+  const result = await getRecipes({ ...paginationParams, ...filterParams, ...sortParams });
 
   res.json({
     status: 200,
@@ -45,7 +47,6 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
-
   let photoURL = null;
 
   if (req.file) {
@@ -67,7 +68,6 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-
   const recipe = await deleteRecipe(req.params.id, req.user.id);
   if (!recipe) throw createHttpError(404, 'Recipe not found');
 
@@ -75,7 +75,6 @@ export async function deleteRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-
   const recipes = await getOwnRecipes(req.user.id);
   res.json({
     status: 200,
@@ -107,7 +106,6 @@ export async function removeRecipeFromFavouritesController(req, res) {
 }
 
 export async function getFavouriteRecipesController(req, res) {
-
   const favouriteRecipes = await getFavouriteRecipes(req.user.id);
 
   res.json({
