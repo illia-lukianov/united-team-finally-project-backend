@@ -32,6 +32,6 @@ router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController)); // ✅
 
 router.post('/favourites/:id', auth, isValidId, ctrlWrapper(addRecipeToFavouritesController)); // ✅
 
-router.delete('/:id', auth, isValidId, ctrlWrapper(deleteRecipeController));
+router.delete('/:id', auth, isValidId, ctrlWrapper(deleteRecipeController)); // ✅
 
 export default router;

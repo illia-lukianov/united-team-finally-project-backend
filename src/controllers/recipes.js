@@ -45,7 +45,6 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
-
   let photoURL = null;
 
   if (req.file) {
@@ -67,15 +66,12 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-
-  const recipe = await deleteRecipe(req.params.id, req.user.id);
-  if (!recipe) throw createHttpError(404, 'Recipe not found');
+  await deleteRecipe(req.params.id, req.user.id);
 
   res.sendStatus(204);
 }
 
 export async function getOwnRecipesController(req, res) {
-
   const recipes = await getOwnRecipes(req.user.id);
   res.json({
     status: 200,
@@ -97,17 +93,16 @@ export async function addRecipeToFavouritesController(req, res) {
 }
 
 export async function removeRecipeFromFavouritesController(req, res) {
-  const favourites = await removeFromFavourites(req.params.id, req.user.id);
+  const removedRecipe = await removeFromFavourites(req.params.id, req.user.id);
 
   res.json({
-    status: 204,
+    status: 200,
     message: `Recipe with id: ${req.params.id} is successfully removed from favourites`,
-    data: favourites,
+    data: removedRecipe,
   });
 }
 
 export async function getFavouriteRecipesController(req, res) {
-
   const favouriteRecipes = await getFavouriteRecipes(req.user.id);
 
   res.json({
