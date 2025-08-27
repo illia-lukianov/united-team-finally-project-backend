@@ -10,6 +10,6 @@ const router = Router();
 router.use('/ingredients', ingredientsRoute);
 router.use('/categories', categoriesRoute);
 router.use('/recipes', recipesRoute);
-router.get('/users', auth, getUserInfoController);
+router.get('/current', auth, getUserInfoController);
 router.use('/auth', authRoute);
 export default router;
