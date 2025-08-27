@@ -54,16 +54,21 @@ export async function createRecipe(payload) {
 }
 
 export async function deleteRecipe(recipeId, userId) {
-  // const users = await userModel.find();
-  // users.forEach(async (user) => {
-  //   if (user.favourites.includes(recipeId)) {
-  //     user.favourites.filter((recipe) => {
-  //       return recipe.toString() !== recipeId;
-  //     });
-  //     await user.save();
-  //   }
-  // }); removeRecipeFromOthersFavourites
-  return recipesCollection.findOneAndDelete({ _id: recipeId, owner: userId });
+  const deletedRecipe = await recipesCollection.findOneAndDelete({
+    _id: recipeId,
+    owner: userId,
+  });
+
+  if (!deletedRecipe) {
+    throw createHttpError(404, "Recipe not found or you are not the owner");
+  }
+
+  await userModel.updateMany(
+    { favourites: recipeId },
+    { $pull: { favourites: recipeId } }
+  );
+
+  return deletedRecipe;
 }
 
 export async function getOwnRecipes(userId) {
@@ -76,23 +81,36 @@ export async function getOwnRecipes(userId) {
 }
 
 export async function addToFavourites(recipeId, userId) {
-  const user = await userModel.findById(userId);
-  user.favourites.push(recipeId);
-  await user.save();
-  return user.favourites;
+  const user = await userModel.findByIdAndUpdate(
+    userId,
+    { $addToSet: { favourites: recipeId } },
+    { new: true, fields: { favourites: 1, _id: 0 } }
+  );
+  if (!user) throw createHttpError(404, "User not found");
+  const recipe = await recipesCollection
+    .findById(recipeId)
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+    return normalizeRecipe(recipe);
 }
 
 export async function removeFromFavourites(recipeId, userId) {
-  const user = await userModel.findById(userId);
-  user.favourites.filter((recipe) => {
-    return recipe.toString() !== recipeId;
-  });
-  await user.save();
-  return user.favourites;
+  await userModel.findByIdAndUpdate(
+    userId,
+    { $pull: { favourites: recipeId } },
+    { new: true }
+  );
+  const recipe = await recipesCollection
+    .findById(recipeId)
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+    return normalizeRecipe(recipe);
 }
 
 export async function getFavouriteRecipes(userId) {
-  const { favourites } = await userModel
+  const {favourites} = await userModel
     .findById(userId)
     .populate({
       path: 'favourites',
@@ -104,6 +122,6 @@ export async function getFavouriteRecipes(userId) {
     })
     .lean()
     .exec();
-
+    console.log(favourites)
   return { items: normalizeRecipeArray(favourites) };
 }

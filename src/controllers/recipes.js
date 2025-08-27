@@ -15,7 +15,6 @@ import {
 } from '../services/recipes.js';
 import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import uploadToStorage from '../utils/uploadToStorage.js';
-import fs from 'node:fs/promises';
 
 export const getRecipesController = async (req, res) => {
   const paginationParams = parsePaginationParams(req.query);
@@ -46,13 +45,9 @@ export async function getRecipeByIdController(req, res) {
 }
 
 export async function createRecipeController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
 
   let photoURL = null;
 
-  console.log('🚀 ~ createRecipeController ~ req.file:', req.file);
   if (req.file) {
     const UPLOAD_TO_CLOUDINARY = getEnvVariables('UPLOAD_TO_CLOUDINARY');
 
@@ -72,9 +67,7 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
+
   const recipe = await deleteRecipe(req.params.id, req.user.id);
   if (!recipe) throw createHttpError(404, 'Recipe not found');
 
@@ -82,9 +75,6 @@ export async function deleteRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
 
   const recipes = await getOwnRecipes(req.user.id);
   res.json({
@@ -97,47 +87,27 @@ export async function getOwnRecipesController(req, res) {
 }
 
 export async function addRecipeToFavouritesController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
-  const receipeId = req.params.id;
-  const favourites = await addToFavourites(req.params.id, req.user.id);
-  const matches = favourites.filter((q) => q.equals(receipeId)).length;
-
-  switch (matches) {
-    case 0:
-      throw createHttpError(404, 'Recipe not found');
-    case 1:
-      res.json({
-        status: 200,
-        message: `Recipe with id: ${req.params.id} is successfully added to favourites`,
-        data: req.params.id,
-      });
-      break;
-    default:
-      throw createHttpError(409, 'Recipe already exists');
-  }
-}
-
-export async function removeRecipeFromFavouritesController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
-  const favourites = await removeFromFavourites(req.params.id, req.user.id);
-
-  if (!favourites) throw createHttpError(404, 'Recipe not found');
+  const favouriteRecipe = await addToFavourites(req.params.id, req.user.id);
 
   res.json({
     status: 200,
+    message: `Recipe with id: ${req.params.id} is successfully added to favourites`,
+    data: favouriteRecipe,
+  });
+}
+
+export async function removeRecipeFromFavouritesController(req, res) {
+  const favourites = await removeFromFavourites(req.params.id, req.user.id);
+
+  res.json({
+    status: 204,
     message: `Recipe with id: ${req.params.id} is successfully removed from favourites`,
     data: favourites,
   });
 }
 
 export async function getFavouriteRecipesController(req, res) {
-  req.user = {
-    id: '64c8d958249fae54bae90bb9',
-  };
+
   const favouriteRecipes = await getFavouriteRecipes(req.user.id);
 
   res.json({

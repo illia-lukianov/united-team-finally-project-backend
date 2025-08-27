@@ -14,23 +14,24 @@ import {
   removeRecipeFromFavouritesController,
   deleteRecipeController,
 } from '../controllers/recipes.js';
+import { auth } from '../middlewares/auth.js';
 
 const router = Router();
 
-router.get('/own', ctrlWrapper(getOwnRecipesController)); // ✅
+router.get('/own', auth, ctrlWrapper(getOwnRecipesController)); // ✅
 
-router.get('/favourites', ctrlWrapper(getFavouriteRecipesController)); // ✅
+router.get('/favourites', auth, ctrlWrapper(getFavouriteRecipesController)); // ✅
 
-router.delete('/favourites/:id', isValidId, ctrlWrapper(removeRecipeFromFavouritesController)); // ✅
+router.delete('/favourites/:id', auth, isValidId, ctrlWrapper(removeRecipeFromFavouritesController)); // ✅
 
 router.get('/', ctrlWrapper(getRecipesController)); // ✅
 
-router.post('/', upload.single('thumb'), validateBody(recipeSchema), ctrlWrapper(createRecipeController)); // ✅
+router.post('/', auth, upload.single('thumb'), validateBody(recipeSchema), ctrlWrapper(createRecipeController)); // ✅
 
 router.get('/:id', isValidId, ctrlWrapper(getRecipeByIdController)); // ✅
 
-router.patch('/favourites/:id', isValidId, ctrlWrapper(addRecipeToFavouritesController)); // ✅
+router.post('/favourites/:id', auth, isValidId, ctrlWrapper(addRecipeToFavouritesController)); // ✅
 
-router.delete('/:id', isValidId, ctrlWrapper(deleteRecipeController));
+router.delete('/:id', auth, isValidId, ctrlWrapper(deleteRecipeController));
 
 export default router;
