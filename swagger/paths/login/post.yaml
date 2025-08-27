@@ -1,0 +1,50 @@
+tags:
+  - Auth
+summary: Login user and return tokens
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            example: youremail@example.com
+          password:
+            type: string
+            example: yourpassword
+responses:
+  '200':
+    description: Login successful
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 64c1e4b3a2f72c30e3d2a123
+                email:
+                  type: string
+                  example: youremail@example.com
+                name:
+                  type: string
+                  example: John
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'

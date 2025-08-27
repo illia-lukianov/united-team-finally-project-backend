@@ -11,7 +11,7 @@ import { swaggerDocs } from './middlewares/swaggerDocs.js';
 import { UPLOAD_DIR } from './constants/index.js';
 import path from 'node:path';
 
-const PORT = getEnvVariables('PORT') ?? '3000';
+const PORT = getEnvVariables("PORT") ?? "3000";
 
 export default function setupServer() {
   const app = express();
@@ -20,14 +20,15 @@ export default function setupServer() {
   app.use(
     pino({
       transport: {
-        target: 'pino-pretty',
+        target: "pino-pretty",
       },
-      level: 'error',
-    }),
+      level: "error",
+    })
   );
   app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
-  app.use('/api-docs', swaggerDocs());
+  app.use("/auth", authRoutes);
+  app.use("/api-docs", swaggerDocs());
   app.use('/thumb', express.static(path.resolve('src/uploads/photo')));
   app.use(router);
   app.use(errorHandler);
