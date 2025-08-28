@@ -25,9 +25,14 @@ responses:
               type: string
               example: Successfully fetched favourite recipes
             data:
-              type: array
-              items:
-                $ref: ../../../components/schemas/recipe.yaml
+              type: object
+              required:
+                - items
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: ../../../components/schemas/recipe.yaml
 
   '401':
     $ref: ../../../components/responses/401.yaml
