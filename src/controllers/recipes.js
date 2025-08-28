@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { getRecipes } from '../services/recipes.js';
+import { getRecipes, updateOwnRecipe } from '../services/recipes.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
@@ -68,7 +68,6 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-  
   const recipe = await deleteRecipe(req.params.id, req.user.id);
   if (!recipe) throw createHttpError(404, 'Recipe not found');
 
@@ -83,6 +82,16 @@ export async function getOwnRecipesController(req, res) {
     data: {
       ...recipes,
     },
+  });
+}
+
+export async function updateOwnRecipeController(req, res) {
+  const updatedRecipe = await updateOwnRecipe(req.params.id, req.user.id, req.body);
+  if (!updatedRecipe) throw createHttpError(404, 'Recipe not found');
+  res.json({
+    status: 200,
+    message: `Successfully updated recipe with id:${req.params.id}`,
+    data: updatedRecipe,
   });
 }
 
