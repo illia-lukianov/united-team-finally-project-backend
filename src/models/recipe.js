@@ -18,6 +18,10 @@ const recipeSchema = mongoose.Schema(
     instructions: {
       type: String,
     },
+    instruction: {
+      type: String,
+      required: false,
+    },
     cals: {
       type: Number,
     },
@@ -28,7 +32,12 @@ const recipeSchema = mongoose.Schema(
       type: String,
     },
     time: {
+      type: Number,
+      required: false,
+    },
+    saveTime: {
       type: String,
+      required: false,
     },
     ingredients: {
       type: [

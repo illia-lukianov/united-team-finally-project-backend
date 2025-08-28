@@ -122,3 +122,28 @@ export async function migrateUserFields() {
   }
   log("Ok");
 }
+
+export const migrateTime = async () => {
+  //const recipes = await recipeModel.find();
+  const resultSet = await recipeModel.updateMany(
+    {}, // всі документи
+    { $unset: { instruction: "" } }
+  );
+  let count = 0;
+  // recipes.forEach((recipe) => {
+  //   //recipe.saveTime = recipe.time;
+  //   let ins = recipe.instruction;
+  //   if (ins) {
+  //     recipe.instructions = ins;
+  //     count++;
+  //   }
+
+  // if (isNaN(newTime)) newTime = 0;
+  // recipe.time = newTime;
+  // if (recipe.title === undefined) {
+  //   recipe.title = "Recipe";
+  // }
+  //   recipe.save();
+  // });
+  console.log("🚀 ~ migrateTime ~ count:", count);
+};
