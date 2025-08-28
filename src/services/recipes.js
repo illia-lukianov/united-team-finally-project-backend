@@ -1,4 +1,3 @@
-import { ingredientModel } from '../models/ingredient.js';
 import calculatePaginationData from '../utils/calculatePaginationData.js';
 import { normalizeRecipe, normalizeRecipeArray } from '../utils/normalizeRecipeFunc.js';
 import { recipesCollection } from '../models/recipe.js';
@@ -6,7 +5,7 @@ import { userModel } from '../models/user.js';
 import mongoose from 'mongoose';
 
 export const getRecipes = async (params) => {
-  const { page, perPage, categories = [], ingredients = [], searchQuery = '' } = params;
+  const { page, perPage, categories = [], ingredients = [], searchQuery = '', sortOrder, sortBy } = params;
 
   const recipesQuery = recipesCollection.find();
 
@@ -18,7 +17,7 @@ export const getRecipes = async (params) => {
     recipesQuery.where({ 'ingredients.id': { $all: ingredients } });
   }
 
-  if (searchQuery.trim() !== '') {
+  if (searchQuery !== '') {
     recipesQuery.where({
       title: { $regex: searchQuery, $options: 'i' },
     });
@@ -31,6 +30,7 @@ export const getRecipes = async (params) => {
   const limit = perPage;
 
   const recipes = await recipesQuery
+    .sort({ [sortBy]: sortOrder })
     .skip(skip)
     .limit(limit)
     .populate({ path: 'ingredients.id', select: '-_id' })
@@ -54,7 +54,7 @@ export async function createRecipe(payload) {
   return recipesCollection.create(payload);
 }
 
-export async function deleteRecipe(recipeId, userId) {
+export async function deleteRecipe(recipeId, userId)  {
   const session = await mongoose.startSession();
 
   await session.withTransaction(async () => {
