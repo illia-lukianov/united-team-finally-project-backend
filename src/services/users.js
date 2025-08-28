@@ -1,10 +1,5 @@
-import { sessionModel } from '../models/session.js';
-import { userModel } from '../models/user.js'; //Це потрібно, поки модель юзера не використовується
+import { userModel } from '../models/user.js';
 
-export const getUserInfo = async (sessionId) => {
-  const currentUser = await sessionModel
-    .findById(sessionId, { userId: 1 })
-    .populate({ path: 'userId', select: '-password' })
-    .lean();
-  return currentUser.userId;
+export const getUserInfo = async (userId) => {
+  return await userModel.findById(userId, {password: 0});;
 };
