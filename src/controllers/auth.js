@@ -7,6 +7,7 @@ import {
   requestResetEmailSchema,
   resetPwd,
 } from '../services/auth.js';
+import { getOAuthURL } from '../utils/googleOauth.js';
 
 export async function registerController(request, response) {
   const user = await registerUser(request.body);
@@ -113,5 +114,17 @@ export async function resetPwdController(request, response) {
   response.json({
     status: 200,
     message: 'Reset password successfully',
+  });
+}
+
+export async function getOauthController(request, response) {
+  const url = await getOAuthURL();
+
+  response.json({
+    status: 200,
+    message: 'Successfully get oauth url',
+    data: {
+      oauth_url: url,
+    },
   });
 }
