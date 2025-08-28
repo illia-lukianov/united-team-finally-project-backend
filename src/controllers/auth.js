@@ -7,15 +7,15 @@ export async function registerController(request, response) {
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 
@@ -38,15 +38,15 @@ export async function loginController(request, response) {
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 
@@ -55,13 +55,13 @@ export async function loginController(request, response) {
     message: 'User successfully registered and login',
     data: {
       accessToken: session.accessToken,
-    //   refreshToken: session.refreshToken,
-    // },
-    // user: {
-    //   id: user._id,
-    //   email: user.email,
-    //   name: user.name,
-    }, 
+      //   refreshToken: session.refreshToken,
+      // },
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      //   name: user.name,
+    },
   });
 }
 export async function refreshUserSessionController(request, response) {
@@ -70,15 +70,15 @@ export async function refreshUserSessionController(request, response) {
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expire: session.refreshTokenValidUntil,
-    sameSite: "None",
+    expires: session.refreshTokenValidUntil,
+    sameSite: 'None',
     secure: true,
   });
 

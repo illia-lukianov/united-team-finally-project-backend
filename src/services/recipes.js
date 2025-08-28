@@ -2,6 +2,7 @@ import calculatePaginationData from '../utils/calculatePaginationData.js';
 import { normalizeRecipe, normalizeRecipeArray } from '../utils/normalizeRecipeFunc.js';
 import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
+import mongoose from 'mongoose';
 
 export const getRecipes = async (params) => {
   const { page, perPage, categories = [], ingredients = [], searchQuery = '', sortOrder, sortBy } = params;
@@ -53,19 +54,16 @@ export async function createRecipe(payload) {
   return recipesCollection.create(payload);
 }
 
-export async function deleteRecipe(recipeId, userId) {
-  const deletedRecipe = await recipesCollection.findOneAndDelete({
-    _id: recipeId,
-    owner: userId,
+export async function deleteRecipe(recipeId, userId)  {
+  const session = await mongoose.startSession();
+
+  await session.withTransaction(async () => {
+    const deletedRecipe = await recipesCollection.findOneAndDelete({ _id: recipeId, owner: userId }, { session });
+    if (!deletedRecipe) throw createHttpError(404, 'Recipe not found or you are not the owner');
+    await userModel.updateMany({ favourites: recipeId }, { $pull: { favourites: recipeId } }, { session });
   });
 
-  if (!deletedRecipe) {
-    throw createHttpError(404, 'Recipe not found or you are not the owner');
-  }
-
-  await userModel.updateMany({ favourites: recipeId }, { $pull: { favourites: recipeId } });
-
-  return deletedRecipe;
+  session.endSession();
 }
 
 export async function getOwnRecipes(userId) {
@@ -115,6 +113,5 @@ export async function getFavouriteRecipes(userId) {
     })
     .lean()
     .exec();
-  console.log(favourites);
   return { items: normalizeRecipeArray(favourites) };
 }
