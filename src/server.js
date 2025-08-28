@@ -34,14 +34,14 @@ export default function setupServer() {
   app.use(
     pino({
       transport: {
-        target: "pino-pretty",
+        target: 'pino-pretty',
       },
-      level: "error",
-    })
+      level: 'error',
+    }),
   );
   app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
-  app.use("/api-docs", swaggerDocs());
+  app.use('/api-docs', swaggerDocs());
   app.use('/thumb', express.static(path.resolve('src/uploads/photo')));
   app.use(router);
   app.use(errorHandler);

@@ -13,7 +13,7 @@ export const parseFilterParams = (query) => {
   const ingredients = query.ingredients ?? query['ingredients[]'];
   const { searchQuery } = query;
 
-  const parsedSearchQuery = typeof searchQuery === 'string' ? searchQuery : '';
+  const parsedSearchQuery = typeof searchQuery === 'string' ? searchQuery.trim() : '';
   const parsedCategories = parseArray(categories);
   const parsedIngredients = parseArray(ingredients);
 

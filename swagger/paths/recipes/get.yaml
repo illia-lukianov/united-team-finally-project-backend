@@ -33,6 +33,20 @@ parameters:
     schema:
       type: string
       example: BANANA
+  - name: sortBy
+    in: query
+    description: "Collection can be sorted by: 'title', 'time', 'cals', 'popularity', 'createdAt', 'updatedAt'. Default:'_id'"
+    schema:
+      type: string
+      enum: ['title', 'time', 'cals', 'popularity', 'createdAt', 'updatedAt']
+      example: popularity
+  - name: sortOrder
+    in: query
+    description: "Sorting direction: 'asc' or 'desc'. Default:'asc'"
+    schema:
+      type: string
+      enum: ['asc', 'desc']
+      example: desc
 responses:
   '200':
     description: Successfully retrieved recipes
