@@ -1,0 +1,98 @@
+tags:
+  - Recipes
+summary: Update recipe
+operationId: updateRecipe
+description: Update recipe
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+      example: 68a9e1eac172cbefce0cde83
+
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        properties:
+          title:
+            type: string
+            description: Recipe title
+            example: Carbonara
+          category:
+            type: string
+            description: Recipe category
+            example: Pasta
+          owner:
+            type: string
+            description: Owner id
+            example: 68a9d93bc172cbefce0cde82
+          area:
+            type: string
+            description: Recipe area
+            example: Italian
+          instruction:
+            type: string
+            description: Instructions to the recipe
+          description:
+            type: string
+            description: Description of the recipe
+          time:
+            type: string
+            description: Cooking time in minutes
+            example: 60
+          ingredients:
+            type: array
+            items:
+              type: object
+              required:
+                - id
+                - measure
+              properties:
+                id:
+                  type: string
+                  description: Ingredient id
+                  example: 68a9d93bc172cbefce0cde82
+                measure:
+                  type: string
+                  description: Measures of the ingredient
+          cals:
+            type: number
+            description: Amount of calories
+            example: 60
+          thumb:
+            type: string
+            format: binary
+            description: Photo of the recipe
+
+responses:
+  '201':
+    description: Successfully updated a recipe
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully updated a recipe
+            data:
+              $ref: ../../../../components/schemas/recipe.yaml
+
+  '401':
+    $ref: ../../../../components/responses/401.yaml
+  '404':
+    $ref: ../../../../components/responses/404.yaml
+  '500':
+    $ref: ../../../../components/responses/500.yaml
