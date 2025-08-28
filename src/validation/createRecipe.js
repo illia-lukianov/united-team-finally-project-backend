@@ -15,13 +15,13 @@ export const createRecipeSchema = Joi.object({
       'string.base': 'Recipe thumb must be a string!',
       'string.max': 'Recipe thumb is too long!',
   }),
-  time: Joi.string().min(1).max(360).required().messages({
+  time: Joi.number().min(1).max(360).required().messages({
     'string.base': 'Cooking time must be a string in minutes!',
     'string.min': 'Cooking time is too short!',
     'string.max': 'Cooking time is too long!',
     'any.required': 'Cooking time field must not be empty!',
   }),
-  cals: Joi.string().min(1).max(10000).messages({
+  cals: Joi.number().min(1).max(10000).messages({
     'string.base': 'Amount of calories must be a string!',
     'string.min': 'Amount of calories is too small!',
     'string.max': 'Amount of calories is too large!',
