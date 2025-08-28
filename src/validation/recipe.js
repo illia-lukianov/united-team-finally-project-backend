@@ -30,7 +30,7 @@ export const recipeSchema = Joi.object({
     'string.base': 'Category name must be a string!',
     'any.required': 'Category name field must not be empty!',
   }),
-  area: Joi.string().required().messages({
+  area: Joi.string().messages({
     'string.base': 'Area name must be a string!',
     'any.required': 'Area name field must not be empty!',
   }),
@@ -50,4 +50,4 @@ export const recipeSchema = Joi.object({
     'string.max': 'Recipe instructions is too long!',
     'any.required': 'Instructions field must not be empty!',
   }),
-}).required();
+});

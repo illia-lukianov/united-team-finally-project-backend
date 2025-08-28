@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export const recipeSchema = Joi.object({
+export const createRecipeSchema = Joi.object({
   title: Joi.string().max(64).required().messages({
     'string.base': 'Recipe name must be a string!',
     'string.max': 'Recipe name is too long!',
@@ -30,7 +30,7 @@ export const recipeSchema = Joi.object({
     'string.base': 'Category name must be a string!',
     'any.required': 'Category name field must not be empty!',
   }),
-  area: Joi.string().required().messages({
+  area: Joi.string().messages({
     'string.base': 'Area name must be a string!',
     'any.required': 'Area name field must not be empty!',
   }),
@@ -45,7 +45,7 @@ export const recipeSchema = Joi.object({
           'any.required': 'Ingredient measure is required!',
         }),
     })),
-  instruction: Joi.string().max(1200).required().messages({
+  instructions: Joi.string().max(1200).required().messages({
     'string.base': 'Recipe instruction must be a string!',
     'string.max': 'Recipe instruction is too long!',
     'any.required': 'Instruction field must not be empty!',
