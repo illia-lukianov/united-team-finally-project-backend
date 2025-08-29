@@ -31,7 +31,7 @@ export async function loginUser(email, password) {
   }
 
   const accessToken = jwt.sign({ userId: user._id, email: user.email }, getEnvVariables('SECRET_JWT'), {
-    expiresIn: '10m',
+    expiresIn: '30m',
   });
   const refreshToken = jwt.sign({ userId: user._id }, getEnvVariables('SECRET_JWT'), {
     expiresIn: '7d',
@@ -43,7 +43,7 @@ export async function loginUser(email, password) {
     userId: user._id,
     accessToken,
     refreshToken,
-    accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
+    accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 }
@@ -67,7 +67,7 @@ export async function refreshUserSession(sessionId, refreshToken) {
   }
 
   const newAccessToken = jwt.sign({ userId: user._id, email: user.email }, getEnvVariables('SECRET_JWT'), {
-    expiresIn: '10m',
+    expiresIn: '30m',
   });
   const newRefreshToken = jwt.sign({ userId: user._id }, getEnvVariables('SECRET_JWT'), {
     expiresIn: '7d',

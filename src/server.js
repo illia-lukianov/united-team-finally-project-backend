@@ -11,7 +11,7 @@ import { swaggerDocs } from './middlewares/swaggerDocs.js';
 import { UPLOAD_DIR } from './constants/index.js';
 import path from 'node:path';
 
-const PORT = getEnvVariables("PORT") ?? "8080";
+const PORT = getEnvVariables('PORT') ?? '8080';
 const allowedOrigins = [
   'http://localhost:4000',
   'http://localhost:5173',
@@ -20,16 +20,18 @@ const allowedOrigins = [
 
 export default function setupServer() {
   const app = express();
-  app.use(cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  }));
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    }),
+  );
   app.use(express.json());
   app.use(
     pino({
