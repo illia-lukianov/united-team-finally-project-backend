@@ -57,12 +57,10 @@ export const updateRecipeSchema = Joi.object({
   title: Joi.string().max(64).messages({
     'string.base': 'Recipe name must be a string!',
     'string.max': 'Recipe name is too long!',
-    'any.required': 'Recipe name field must not be empty!',
   }),
   description: Joi.string().max(200).messages({
     'string.base': 'Recipe description must be a string!',
     'string.max': 'Recipe description is too long!',
-    'any.required': 'Description field must not be empty!',
   }),
   thumb: Joi.string().max(200).messages({
     'string.base': 'Recipe thumb must be a string!',
@@ -72,7 +70,6 @@ export const updateRecipeSchema = Joi.object({
     'string.base': 'Cooking time must be a string in minutes!',
     'string.min': 'Cooking time is too short!',
     'string.max': 'Cooking time is too long!',
-    'any.required': 'Cooking time field must not be empty!',
   }),
   cals: Joi.number().min(1).max(10000).messages({
     'string.base': 'Amount of calories must be a string!',
@@ -81,11 +78,9 @@ export const updateRecipeSchema = Joi.object({
   }),
   category: Joi.string().messages({
     'string.base': 'Category name must be a string!',
-    'any.required': 'Category name field must not be empty!',
   }),
   area: Joi.string().messages({
     'string.base': 'Area name must be a string!',
-    'any.required': 'Area name field must not be empty!',
   }),
   ingredients: Joi.array().items(
     Joi.object({
@@ -102,6 +97,5 @@ export const updateRecipeSchema = Joi.object({
   instructions: Joi.string().max(1200).messages({
     'string.base': 'Recipe instructions must be a string!',
     'string.max': 'Recipe instructions is too long!',
-    'any.required': 'Instructions field must not be empty!',
   }),
 });

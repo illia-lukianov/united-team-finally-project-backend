@@ -21,7 +21,14 @@ const router = Router();
 
 router.get('/own', auth, ctrlWrapper(getOwnRecipesController)); // ✅
 
-router.patch('/own/:id', auth, isValidId, validateBody(updateRecipeSchema), ctrlWrapper(updateOwnRecipeController));
+router.patch(
+  '/own/:id',
+  auth,
+  isValidId,
+  upload.single('thumb'),
+  validateBody(updateRecipeSchema),
+  ctrlWrapper(updateOwnRecipeController),
+);
 
 router.get('/favourites', auth, ctrlWrapper(getFavouriteRecipesController)); // ✅
 

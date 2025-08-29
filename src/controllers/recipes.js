@@ -86,7 +86,22 @@ export async function getOwnRecipesController(req, res) {
 }
 
 export async function updateOwnRecipeController(req, res) {
-  const updatedRecipe = await updateOwnRecipe(req.params.id, req.user.id, req.body);
+  let photoURL = null;
+
+  if (req.file) {
+    const UPLOAD_TO_CLOUDINARY = getEnvVariables('UPLOAD_TO_CLOUDINARY');
+
+    if (UPLOAD_TO_CLOUDINARY === 'true') {
+      photoURL = await uploadToCloudinary(req.file.path);
+    } else {
+      photoURL = await uploadToStorage(req.file);
+    }
+  }
+
+  const updatedRecipe = await updateOwnRecipe(req.params.id, req.user.id, {
+    ...req.body,
+    thumb: photoURL ?? undefined,
+  });
   if (!updatedRecipe) throw createHttpError(404, 'Recipe not found');
   res.json({
     status: 200,

@@ -76,10 +76,18 @@ export async function getOwnRecipes(userId) {
 }
 
 export async function updateOwnRecipe(recipeId, userId, payload) {
-  const updatedRecipe = await recipesCollection.findOneAndUpdate({ _id: recipeId, owner: userId }, payload, {
-    new: true,
-  });
-  return updatedRecipe;
+  const updatedRecipe = await recipesCollection
+    .findOneAndUpdate(
+      { _id: recipeId, owner: userId },
+      { $set: payload },
+      {
+        new: true,
+      },
+    )
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+  return normalizeRecipe(updatedRecipe);
 }
 
 export async function addToFavourites(recipeId, userId) {
