@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 //----------FilterParams----------
 const parseArray = (arr) => {
   if (typeof arr === 'string' && arr.length > 0) return arr.split(',');
@@ -16,9 +17,9 @@ export const parseFilterParams = (query) => {
 
   const parsedSearchQuery = typeof searchQuery === 'string' ? searchQuery.trim() : '';
   const parsedCategories = parseArray(categories);
-  const parsedIngredients = parseArray(ingredients);
+  const parsedIngredients = parseArray(ingredients).map((i) => new ObjectId(i));
   // console.log('parsedCategories', parsedCategories);
-  console.log('parsedIngredients', parsedIngredients);
+  // console.log('parsedIngredients', parsedIngredients);
 
   return {
     searchQuery: parsedSearchQuery,

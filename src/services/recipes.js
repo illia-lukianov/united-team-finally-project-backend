@@ -1,5 +1,5 @@
 import calculatePaginationData from '../utils/calculatePaginationData.js';
-import { normalizeRecipe, normalizeRecipeArray } from '../utils/normalizeRecipeFunc.js';
+import { normalizeRecipe } from '../utils/normalizeRecipeFunc.js';
 import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
 import mongoose from 'mongoose';
@@ -48,8 +48,8 @@ export const getRecipes = async (startQuery = [], params = null) => {
     { $unset: ['ingredients.id', 'ingredients._id', 'ingredientsData'] },
   );
 
-  const { page, perPage } = parsePaginationParams(params);
   if (params !== null) {
+    const { page, perPage } = parsePaginationParams(params);
     const limit = perPage;
     const skip = (page - 1) * perPage;
     query.push({
@@ -60,13 +60,16 @@ export const getRecipes = async (startQuery = [], params = null) => {
     });
   }
 
-  console.log('query', query);
   const recipes = await recipesCollection.aggregate(query).exec();
+  let result = { ...recipes[0] };
+  if (params !== null) {
+    const { page, perPage } = parsePaginationParams(params);
+    const totalRecipes = recipes[0].totalCount[0]?.count || 0;
+    const paginationData = calculatePaginationData(totalRecipes, page, perPage);
+    result = { item: recipes[0].data, ...paginationData };
+  }
 
-  const totalRecipes = recipes[0].totalCount[0]?.count || 0;
-  const paginationData = calculatePaginationData(totalRecipes, page, perPage);
-
-  return { data: recipes[0].data, paginationData };
+  return result;
 };
 
 export const getRecipesWithFiltering = async (startQuery = [], params) => {
@@ -87,50 +90,16 @@ export const getRecipesWithFiltering = async (startQuery = [], params) => {
   return result;
 };
 
-// export const getRecipes = async (params) => {
-//   const { page, perPage, categories = [], ingredients = [], searchQuery = '', sortOrder, sortBy } = params;
-
-//   const recipesQuery = recipesCollection.find();
-
-//   if (categories.length > 0) {
-//     recipesQuery.where({ category: { $in: categories } });
-//   }
-
-//   if (ingredients.length > 0) {
-//     recipesQuery.where({ 'ingredients.id': { $all: ingredients } });
-//   }
-
-//   if (searchQuery !== '') {
-//     recipesQuery.where({
-//       title: { $regex: searchQuery, $options: 'i' },
-//     });
-//   }
-
-//   const skip = (page - 1) * perPage;
-
-//   const totalRecipes = await recipesCollection.find().merge(recipesQuery).countDocuments();
-
-//   const limit = perPage;
-
-//   const recipes = await recipesQuery
-//     .sort({ [sortBy]: sortOrder })
-//     .skip(skip)
-//     .limit(limit)
-//     .populate({ path: 'ingredients.id', select: '-_id' })
-//     .lean()
-//     .exec();
-//   const paginationData = calculatePaginationData(totalRecipes, page, perPage);
-
-//   return { data: normalizeRecipeArray(recipes), paginationData };
-// };
-
 export async function getRecipeById(recipeId) {
-  const recipe = await recipesCollection
-    .findById(recipeId)
-    .populate({ path: 'ingredients.id', select: '-_id' })
-    .lean()
-    .exec();
-  return normalizeRecipe(recipe);
+  const query = [{ $match: { _id: new mongoose.Types.ObjectId(String(recipeId)) } }];
+  return await getRecipes(query);
+
+  // const recipe = await recipesCollection
+  //   .findById(recipeId)
+  //   .populate({ path: 'ingredients.id', select: '-_id' })
+  //   .lean()
+  //   .exec();
+  // return normalizeRecipe(recipe);
 }
 
 export async function createRecipe(payload) {
@@ -149,13 +118,16 @@ export async function deleteRecipe(recipeId, userId) {
   session.endSession();
 }
 
-export async function getOwnRecipes(userId) {
-  const recipes = await recipesCollection
-    .find({ owner: userId })
-    .populate({ path: 'ingredients.id', select: '-_id' })
-    .lean()
-    .exec();
-  return { items: normalizeRecipeArray(recipes) };
+export async function getOwnRecipes(userId, params) {
+  const query = [{ $match: { owner: new mongoose.Types.ObjectId(String(userId)) } }];
+  return await getRecipesWithFiltering(query, params);
+
+  // const recipes = await recipesCollection
+  //   .find({ owner: userId })
+  //   .populate({ path: 'ingredients.id', select: '-_id' })
+  //   .lean()
+  //   .exec();
+  // return { items: normalizeRecipeArray(recipes) };
 }
 
 export async function addToFavourites(recipeId, userId) {
@@ -183,18 +155,23 @@ export async function removeFromFavourites(recipeId, userId) {
   return normalizeRecipe(recipe);
 }
 
-export async function getFavouriteRecipes(userId) {
-  const { favourites } = await userModel
-    .findById(userId)
-    .populate({
-      path: 'favourites',
-      select: '',
-      populate: {
-        path: 'ingredients.id',
-        select: '-_id',
-      },
-    })
-    .lean()
-    .exec();
-  return { items: normalizeRecipeArray(favourites) };
+export async function getFavouriteRecipes(userId, params) {
+  const { favourites } = await userModel.findById(userId, { favourites: 1, _id: 0 });
+
+  const query = [{ $match: { _id: { $in: favourites } } }];
+  return await getRecipesWithFiltering(query, params);
+
+  // const { favourites } = await userModel
+  //   .findById(userId)
+  //   .populate({
+  //     path: 'favourites',
+  //     select: '',
+  //     populate: {
+  //       path: 'ingredients.id',
+  //       select: '-_id',
+  //     },
+  //   })
+  //   .lean()
+  //   .exec();
+  // return { items: normalizeRecipeArray(favourites) };
 }

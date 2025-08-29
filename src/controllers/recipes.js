@@ -15,15 +15,11 @@ import uploadToStorage from '../utils/uploadToStorage.js';
 
 export const getRecipesController = async (req, res) => {
   const result = await getRecipesWithFiltering([], req.query);
-  // console.log('In controller:', result);
 
   res.json({
     status: 200,
     message: 'Successfully found recipes!',
-    data: {
-      items: [...result.data],
-      ...result.paginationData,
-    },
+    data: result,
   });
 };
 
@@ -68,13 +64,12 @@ export async function deleteRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-  const recipes = await getOwnRecipes(req.user.id);
+  const recipes = await getOwnRecipes(req.user.id, req.query);
   res.json({
     status: 200,
     message: 'Successfully fetched recipes',
-    data: {
-      ...recipes,
-    },
+
+    data: recipes,
   });
 }
 
@@ -99,11 +94,11 @@ export async function removeRecipeFromFavouritesController(req, res) {
 }
 
 export async function getFavouriteRecipesController(req, res) {
-  const favouriteRecipes = await getFavouriteRecipes(req.user.id);
+  const favouriteRecipes = await getFavouriteRecipes(req.user.id, req.query);
 
   res.json({
     status: 200,
     message: 'Successfully fetched favourite recipes',
-    data: { items: favouriteRecipes.items },
+    data: favouriteRecipes,
   });
 }
