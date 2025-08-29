@@ -5,7 +5,7 @@ const recipesSchema = new Schema(
     title: { type: String, required: true },
     category: { type: String, required: true },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    area: { type: String, required: true },
+    area: { type: String, required: false },
     instructions: { type: String, required: true },
     description: { type: String, required: true },
     cals: { type: Number, default: null },
@@ -29,4 +29,3 @@ const recipesSchema = new Schema(
 
 recipesSchema.index({ title: 'text' });
 export const recipesCollection = model('Recipe', recipesSchema, 'recipes');
-// recipesCollection.syncIndexes();
