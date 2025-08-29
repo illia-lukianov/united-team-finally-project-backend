@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import isValidId from '../middlewares/isValidId.js';
 import validateBody from '../middlewares/validateBody.js';
-import { recipeSchema } from '../validation/recipe.js';
+import { recipeSchema, updateRecipeSchema } from '../validation/recipe.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { upload } from '../middlewares/upload.js';
 import {
@@ -13,12 +13,22 @@ import {
   getRecipeByIdController,
   removeRecipeFromFavouritesController,
   deleteRecipeController,
+  updateOwnRecipeController,
 } from '../controllers/recipes.js';
 import { auth } from '../middlewares/auth.js';
 
 const router = Router();
 
 router.get('/own', auth, ctrlWrapper(getOwnRecipesController)); // ✅
+
+router.patch(
+  '/own/:id',
+  auth,
+  isValidId,
+  upload.single('thumb'),
+  validateBody(updateRecipeSchema),
+  ctrlWrapper(updateOwnRecipeController),
+);
 
 router.get('/favourites', auth, ctrlWrapper(getFavouriteRecipesController)); // ✅
 

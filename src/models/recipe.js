@@ -14,10 +14,12 @@ const recipesSchema = new Schema(
     ingredients: [
       new Schema(
         {
-          id: { type: Schema.Types.ObjectId, ref: 'Ingredient', required: true, default: [] },
+          id: { type: Schema.Types.ObjectId, ref: 'Ingredient', required: true },
           measure: { type: String, required: true },
         },
-        { _id: false },
+        {
+          _id: false,
+        },
       ),
     ],
   },

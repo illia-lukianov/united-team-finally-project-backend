@@ -54,7 +54,7 @@ export async function createRecipe(payload) {
   return recipesCollection.create(payload);
 }
 
-export async function deleteRecipe(recipeId, userId)  {
+export async function deleteRecipe(recipeId, userId) {
   const session = await mongoose.startSession();
 
   await session.withTransaction(async () => {
@@ -73,6 +73,21 @@ export async function getOwnRecipes(userId) {
     .lean()
     .exec();
   return { items: normalizeRecipeArray(recipes) };
+}
+
+export async function updateOwnRecipe(recipeId, userId, payload) {
+  const updatedRecipe = await recipesCollection
+    .findOneAndUpdate(
+      { _id: recipeId, owner: userId },
+      { $set: payload },
+      {
+        new: true,
+      },
+    )
+    .populate({ path: 'ingredients.id', select: '-_id' })
+    .lean()
+    .exec();
+  return normalizeRecipe(updatedRecipe);
 }
 
 export async function addToFavourites(recipeId, userId) {
