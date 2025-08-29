@@ -1,10 +1,6 @@
 import createHttpError from 'http-errors';
-import { getRecipes } from '../services/recipes.js';
-import { parseFilterParams } from '../utils/parseFilterParams.js';
-import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-import { parseSortParams } from '../utils/parseSortParams.js';
+import { getRecipesWithFiltering } from '../services/recipes.js';
 import getEnvVariables from '../utils/getEnvVariables.js';
-import path from 'node:path';
 import {
   addToFavourites,
   createRecipe,
@@ -18,11 +14,8 @@ import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import uploadToStorage from '../utils/uploadToStorage.js';
 
 export const getRecipesController = async (req, res) => {
-  const paginationParams = parsePaginationParams(req.query);
-  const filterParams = parseFilterParams(req.query);
-  const sortParams = parseSortParams(req.query);
-
-  const result = await getRecipes({ ...paginationParams, ...filterParams, ...sortParams });
+  const result = await getRecipesWithFiltering([], req.query);
+  // console.log('In controller:', result);
 
   res.json({
     status: 200,
@@ -68,7 +61,6 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-  
   const recipe = await deleteRecipe(req.params.id, req.user.id);
   if (!recipe) throw createHttpError(404, 'Recipe not found');
 

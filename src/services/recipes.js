@@ -3,43 +3,126 @@ import { normalizeRecipe, normalizeRecipeArray } from '../utils/normalizeRecipeF
 import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
 import mongoose from 'mongoose';
+import { parseFilterParams, parsePaginationParams, parseSortParams } from '../utils/parseQueryParams.js';
 
-export const getRecipes = async (params) => {
-  const { page, perPage, categories = [], ingredients = [], searchQuery = '', sortOrder, sortBy } = params;
+export const getRecipes = async (startQuery = [], params = null) => {
+  const query = [...startQuery];
 
-  const recipesQuery = recipesCollection.find();
+  //Populate 😎
+  query.push(
+    {
+      $lookup: {
+        from: 'ingredients',
+        localField: 'ingredients.id',
+        foreignField: '_id',
+        as: 'ingredientsData',
+      },
+    },
+    {
+      $addFields: {
+        ingredients: {
+          $map: {
+            input: '$ingredients',
+            as: 'ing',
+            in: {
+              $mergeObjects: [
+                {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: '$ingredientsData',
+                        as: 'ingData',
+                        cond: { $eq: ['$$ingData._id', '$$ing.id'] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+                '$$ing',
+              ],
+            },
+          },
+        },
+      },
+    },
+    { $unset: ['ingredients.id', 'ingredients._id', 'ingredientsData'] },
+  );
 
-  if (categories.length > 0) {
-    recipesQuery.where({ category: { $in: categories } });
-  }
-
-  if (ingredients.length > 0) {
-    recipesQuery.where({ 'ingredients.id': { $all: ingredients } });
-  }
-
-  if (searchQuery !== '') {
-    recipesQuery.where({
-      title: { $regex: searchQuery, $options: 'i' },
+  const { page, perPage } = parsePaginationParams(params);
+  if (params !== null) {
+    const limit = perPage;
+    const skip = (page - 1) * perPage;
+    query.push({
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limit }],
+        totalCount: [{ $count: 'count' }],
+      },
     });
   }
 
-  const skip = (page - 1) * perPage;
+  console.log('query', query);
+  const recipes = await recipesCollection.aggregate(query).exec();
 
-  const totalRecipes = await recipesCollection.find().merge(recipesQuery).countDocuments();
-
-  const limit = perPage;
-
-  const recipes = await recipesQuery
-    .sort({ [sortBy]: sortOrder })
-    .skip(skip)
-    .limit(limit)
-    .populate({ path: 'ingredients.id', select: '-_id' })
-    .lean()
-    .exec();
+  const totalRecipes = recipes[0].totalCount[0]?.count || 0;
   const paginationData = calculatePaginationData(totalRecipes, page, perPage);
 
-  return { data: normalizeRecipeArray(recipes), paginationData };
+  return { data: recipes[0].data, paginationData };
 };
+
+export const getRecipesWithFiltering = async (startQuery = [], params) => {
+  const { categories = [], ingredients = [], searchQuery = '' } = parseFilterParams(params);
+  const { sortBy = '', sortOrder } = parseSortParams(params);
+
+  const query = [...startQuery];
+
+  if (categories.length !== 0) query.push({ $match: { category: { $in: categories } } });
+
+  if (ingredients.length !== 0) query.push({ $match: { 'ingredients.id': { $all: ingredients } } });
+
+  if (searchQuery.length !== 0) query.push({ $match: { title: { $regex: searchQuery, $options: 'i' } } });
+
+  if (sortBy.length !== 0) query.push({ $sort: { [sortBy]: sortOrder } });
+
+  const result = await getRecipes(query, params);
+  return result;
+};
+
+// export const getRecipes = async (params) => {
+//   const { page, perPage, categories = [], ingredients = [], searchQuery = '', sortOrder, sortBy } = params;
+
+//   const recipesQuery = recipesCollection.find();
+
+//   if (categories.length > 0) {
+//     recipesQuery.where({ category: { $in: categories } });
+//   }
+
+//   if (ingredients.length > 0) {
+//     recipesQuery.where({ 'ingredients.id': { $all: ingredients } });
+//   }
+
+//   if (searchQuery !== '') {
+//     recipesQuery.where({
+//       title: { $regex: searchQuery, $options: 'i' },
+//     });
+//   }
+
+//   const skip = (page - 1) * perPage;
+
+//   const totalRecipes = await recipesCollection.find().merge(recipesQuery).countDocuments();
+
+//   const limit = perPage;
+
+//   const recipes = await recipesQuery
+//     .sort({ [sortBy]: sortOrder })
+//     .skip(skip)
+//     .limit(limit)
+//     .populate({ path: 'ingredients.id', select: '-_id' })
+//     .lean()
+//     .exec();
+//   const paginationData = calculatePaginationData(totalRecipes, page, perPage);
+
+//   return { data: normalizeRecipeArray(recipes), paginationData };
+// };
 
 export async function getRecipeById(recipeId) {
   const recipe = await recipesCollection
@@ -54,7 +137,7 @@ export async function createRecipe(payload) {
   return recipesCollection.create(payload);
 }
 
-export async function deleteRecipe(recipeId, userId)  {
+export async function deleteRecipe(recipeId, userId) {
   const session = await mongoose.startSession();
 
   await session.withTransaction(async () => {
