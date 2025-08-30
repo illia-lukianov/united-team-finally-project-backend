@@ -1,13 +1,14 @@
 import { userModel } from '../models/user.js';
 import {
+  loginOrRegister,
   loginUser,
   logoutUser,
   refreshUserSession,
   registerUser,
-  requestResetEmailSchema,
+  requestResetEmail,
   resetPwd,
 } from '../services/auth.js';
-import { getOAuthURL } from '../utils/googleOauth.js';
+import { getOAuthURL, validateCode } from '../utils/googleOauth.js';
 
 export async function registerController(request, response) {
   const user = await registerUser(request.body);
@@ -98,8 +99,9 @@ export async function logoutController(request, response) {
 }
 
 export async function requestResetEmailController(request, response) {
-  await requestResetEmailSchema(request.body.email);
-
+  console.log(`Received reset request for email: ${request.body.email}`);
+  await requestResetEmail(request.body.email);
+  console.log('Password reset email sent successfully');
   response.json({
     status: 200,
     message: 'Message sent successfully',
@@ -125,6 +127,35 @@ export async function getOauthController(request, response) {
     message: 'Successfully get oauth url',
     data: {
       oauth_url: url,
+    },
+  });
+}
+
+export async function confirmOauthController(request, response) {
+  console.log('Received OAuth code:', request.body.code);
+  const ticket = await validateCode(request.body.code);
+
+  const session = await loginOrRegister(ticket.payload.email, ticket.payload.name);
+
+  response.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+
+  response.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+
+  response.json({
+    status: 201,
+    message: 'Login via Google was successful',
+    data: {
+      // user: {
+      //   id: user._id,
+      //   email: user.email,
+      // },
+      accessToken: session.accessToken,
     },
   });
 }

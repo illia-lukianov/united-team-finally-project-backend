@@ -88,12 +88,18 @@ export async function logoutUser(session_id) {
   await sessionModel.deleteOne({ _id: session_id });
 }
 
-export async function requestResetEmailSchema(email) {
-  const user = await userModel.findById({ email });
+export async function requestResetEmail(email) {
+  console.log(`Received reset request for email: ${email}`);
+
+  const user = await userModel.findOne({ email });
 
   if (user === null) {
+    console.log(`User not found for email: ${email}`);
+
     throw new createHttpError.NotFound('User was not found');
   }
+
+  console.log(`User found: ${user._id}, sending reset email`);
 
   const token = jwt.sign({ sub: user._id, name: user.name }, getEnvVariables('SECRET_JWT'), {
     expiresIn: '10m',
@@ -102,21 +108,28 @@ export async function requestResetEmailSchema(email) {
   await sendMail({
     to: email,
     subject: 'Reset password',
-    html: `<p>To reset password please click the <a href:"http://localhost:8080/reset-password/${token}">Link</a></p>`,
+    html: `<p>To reset password please click the <a href="http://localhost:8080/reset-password/${token}">Link</a></p>`,
   });
+
+  console.log(`Password reset email sent to: ${email}`);
 }
 
-export async function resetPwd(token, passsword) {
+export async function resetPwd(token, password) {
   try {
+    console.log('Verifying token...');
     const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
+
+    console.log('Token verified, finding user...');
 
     const user = await userModel.findById(decoded.sub);
 
     if (user === null) {
+      console.log('User not found');
       throw new createHttpError.NotFound('User was not found');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Updating password...');
 
     await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
   } catch (error) {
@@ -128,4 +141,21 @@ export async function resetPwd(token, passsword) {
     }
     throw error;
   }
+}
+
+export async function loginOrRegister(email, name) {
+  let user = await userModel.findOne({ email });
+  if (user === null) {
+    const password = await bcrypt.hash(crypto.randomBytes(30).toString('base64'), 10);
+    user = await userModel.create({ email, name, password });
+  }
+  await sessionModel.deleteOne({ userId: user._id });
+
+  return sessionModel.create({
+    userId: user._id,
+    accessToken: crypto.randomBytes(30).toString('base64'),
+    refreshToken: crypto.randomBytes(30).toString('base64'),
+    accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
 }
