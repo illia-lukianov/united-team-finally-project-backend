@@ -1,6 +1,7 @@
 import {
   migrateCalValue,
   migrateIngredientsId,
+  migrateIsConfirmed,
   migrateTime,
   migrateUserFields,
 } from "../migrationMongo.js";
@@ -9,4 +10,4 @@ import setupServer from "./server.js";
 
 await initMongoConnection();
 setupServer();
-//await migrateTime();
+//await migrateIsConfirmed();

@@ -147,3 +147,8 @@ export const migrateTime = async () => {
   // });
   console.log("🚀 ~ migrateTime ~ count:", count);
 };
+
+export const migrateIsConfirmed = async () => {
+  const user = await User.updateMany({}, { $set: { isConfirmed: true } });
+  console.log("🚀 ~ migrateIsConfirmed ~ user:", user);
+};
