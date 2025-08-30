@@ -1,29 +1,92 @@
-import crypto from 'node:crypto';
-
+import Handlebars from 'handlebars';
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import getEnvVariables from '../utils/getEnvVariables.js';
-
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
+import { sendMail } from '../utils/sendMail.js';
+import * as fs from 'node:fs';
+import path from 'node:path';
+
+const CONFIRM_EMAIL_TEMPLATE = fs.readFileSync(
+  path.resolve('src/templates/confirm-email.hbs'),
+  { encoding: 'utf-8' },
+);
 
 export async function registerUser(payload) {
-  const user = await userModel.findOne({ email: payload.email });
-  if (user !== null) {
+  const existingUser = await userModel.findOne({ email: payload.email });
+
+  if (existingUser) {
     throw new createHttpError.Conflict('Email is already in use');
   }
+
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
-  return userModel.create({ ...payload, password: hashedPassword });
+  const newUser = await userModel.create({ ...payload, password: hashedPassword, isConfirmed: false });
+
+  const token = jwt.sign(
+    { email: payload.email },
+    getEnvVariables('SECRET_JWT'),
+    { expiresIn: '30m' }
+  );
+
+  const template = Handlebars.compile(CONFIRM_EMAIL_TEMPLATE)
+
+  const mail = await sendMail({
+    to: payload.email,
+    subject: 'Confirmation email',
+    html: template({
+      confirmEmailLink: `https://united-team-finally-project-front-e.vercel.app/auth/confirm-email/${token}`,
+    }),
+  });
+
+  if (!mail.accepted || mail.accepted.length === 0) {
+    throw createHttpError(500, "Failed to send the email, please try again later.");
+  }
+
+  return newUser;
 }
+
+export async function confirmEmail(token) {
+  try {
+    const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
+
+    const user = await userModel.findOne({ email: decoded.email });
+
+    if (!user) {
+      throw new createHttpError.NotFound('User not found');
+    }
+
+    if (user.isConfirmed) {
+      return;
+    }
+
+    user.isConfirmed = true;
+    await user.save();
+
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      throw new createHttpError.Unauthorized('Token is expired');
+    }
+
+    if (error.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Token is unauthorized');
+    }
+
+    throw error;
+  }
+}
+
 export async function loginUser(email, password) {
   const user = await userModel.findOne({ email });
 
   if (user === null) {
     throw new createHttpError.Unauthorized('Email or password is incorrect');
   }
-
+  if (!user.isConfirmed) {
+      throw new createHttpError.Unauthorized('Account is not confirmed');
+    }
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (isMatch !== true) {

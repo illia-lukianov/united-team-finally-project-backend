@@ -1,8 +1,9 @@
 import express from "express";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import validateBody from "../middlewares/validateBody.js";
-import { registerUserSchema, loginSchema } from "../validation/auth.js";
+import { registerUserSchema, loginSchema, confirmEmailSchema } from "../validation/auth.js";
 import {
+  confirmEmailController,
   loginController,
   logoutController,
   refreshUserSessionController,
@@ -17,6 +18,7 @@ router.post(
   validateBody(registerUserSchema),
   ctrlWrapper(registerController)
 );
+router.post('/confirm-email', validateBody(confirmEmailSchema), ctrlWrapper(confirmEmailController))
 router.post('/login', validateBody(loginSchema), ctrlWrapper(loginController));
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 router.post('/logout', ctrlWrapper(logoutController));
