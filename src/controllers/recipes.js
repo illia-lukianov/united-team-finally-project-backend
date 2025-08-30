@@ -1,10 +1,6 @@
 import createHttpError from 'http-errors';
-import { getRecipes } from '../services/recipes.js';
-import { parseFilterParams } from '../utils/parseFilterParams.js';
-import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-import { parseSortParams } from '../utils/parseSortParams.js';
+import { getRecipesWithFiltering } from '../services/recipes.js';
 import getEnvVariables from '../utils/getEnvVariables.js';
-import path from 'node:path';
 import {
   addToFavourites,
   createRecipe,
@@ -18,19 +14,12 @@ import uploadToCloudinary from '../utils/uploadToCloudinary.js';
 import uploadToStorage from '../utils/uploadToStorage.js';
 
 export const getRecipesController = async (req, res) => {
-  const paginationParams = parsePaginationParams(req.query);
-  const filterParams = parseFilterParams(req.query);
-  const sortParams = parseSortParams(req.query);
-
-  const result = await getRecipes({ ...paginationParams, ...filterParams, ...sortParams });
+  const result = await getRecipesWithFiltering([], req.query);
 
   res.json({
     status: 200,
     message: 'Successfully found recipes!',
-    data: {
-      items: [...result.data],
-      ...result.paginationData,
-    },
+    data: result,
   });
 };
 
@@ -68,7 +57,6 @@ export async function createRecipeController(req, res) {
 }
 
 export async function deleteRecipeController(req, res) {
-  
   const recipe = await deleteRecipe(req.params.id, req.user.id);
   if (!recipe) throw createHttpError(404, 'Recipe not found');
 
@@ -76,13 +64,37 @@ export async function deleteRecipeController(req, res) {
 }
 
 export async function getOwnRecipesController(req, res) {
-  const recipes = await getOwnRecipes(req.user.id);
+  const recipes = await getOwnRecipes(req.user.id, req.query);
   res.json({
     status: 200,
     message: 'Successfully fetched recipes',
-    data: {
-      ...recipes,
-    },
+
+    data: recipes,
+  });
+}
+
+export async function updateOwnRecipeController(req, res) {
+  let photoURL = null;
+
+  if (req.file) {
+    const UPLOAD_TO_CLOUDINARY = getEnvVariables('UPLOAD_TO_CLOUDINARY');
+
+    if (UPLOAD_TO_CLOUDINARY === 'true') {
+      photoURL = await uploadToCloudinary(req.file.path);
+    } else {
+      photoURL = await uploadToStorage(req.file);
+    }
+  }
+
+  const updatedRecipe = await updateOwnRecipe(req.params.id, req.user.id, {
+    ...req.body,
+    thumb: photoURL ?? undefined,
+  });
+  if (!updatedRecipe) throw createHttpError(404, 'Recipe not found');
+  res.json({
+    status: 200,
+    message: `Successfully updated recipe with id:${req.params.id}`,
+    data: updatedRecipe,
   });
 }
 
@@ -107,11 +119,11 @@ export async function removeRecipeFromFavouritesController(req, res) {
 }
 
 export async function getFavouriteRecipesController(req, res) {
-  const favouriteRecipes = await getFavouriteRecipes(req.user.id);
+  const favouriteRecipes = await getFavouriteRecipes(req.user.id, req.query);
 
   res.json({
     status: 200,
     message: 'Successfully fetched favourite recipes',
-    data: { items: favouriteRecipes.items },
+    data: favouriteRecipes,
   });
 }
