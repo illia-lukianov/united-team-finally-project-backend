@@ -66,7 +66,7 @@ export const getRecipes = async (startQuery = [], params = null) => {
     const { page, perPage } = parsePaginationParams(params);
     const totalRecipes = recipes[0].totalCount[0]?.count || 0;
     const paginationData = calculatePaginationData(totalRecipes, page, perPage);
-    result = { item: recipes[0].data, ...paginationData };
+    result = { items: recipes[0].data, ...paginationData };
   }
 
   return result;
