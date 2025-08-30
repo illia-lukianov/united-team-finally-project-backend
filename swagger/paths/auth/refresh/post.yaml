@@ -1,9 +1,11 @@
 tags:
   - Auth
+operationId: refreshUser
+security: []
 summary: Refresh access and refresh tokens
 description: Requires cookies `sessionId` and `refreshToken`
 responses:
-  "200":
+  '200':
     description: Tokens refreshed
     content:
       application/json:
@@ -17,5 +19,5 @@ responses:
                   type: string
                 refreshToken:
                   type: string
-  "401":
-    $ref: "../../components/responses/401.yaml"
+  '401':
+    $ref: '../../../components/responses/401.yaml'

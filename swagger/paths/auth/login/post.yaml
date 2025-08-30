@@ -1,6 +1,8 @@
 tags:
   - Auth
-summary: Login user and return tokens
+summary: Login user
+operationId: loginUser
+security: []
 requestBody:
   required: true
   content:
@@ -45,6 +47,6 @@ responses:
                   type: string
                   example: John
   '400':
-    $ref: '../../components/responses/400.yaml'
+    $ref: '../../../components/responses/400.yaml'
   '401':
-    $ref: '../../components/responses/401.yaml'
+    $ref: '../../../components/responses/401.yaml'
