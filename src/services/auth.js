@@ -1,7 +1,6 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
-import { randomBytes } from 'crypto';
-
+import { randomBytes } from 'crypto'
 import Handlebars from 'handlebars';
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
@@ -60,17 +59,17 @@ export async function confirmEmail(token) {
     const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
 
     const user = await userModel.findOne({ email: decoded.email });
-
+    
     if (!user) {
       throw new createHttpError.NotFound('User not found');
     }
 
     if (user.isConfirmed) {
       return;
+    } else {
+      user.isConfirmed = true;
+      await user.save();
     }
-
-    user.isConfirmed = true;
-    await user.save();
 
     const accessToken = jwt.sign({ userId: user._id, email: user.email }, getEnvVariables('SECRET_JWT'), {
       expiresIn: '30m',
@@ -80,14 +79,14 @@ export async function confirmEmail(token) {
     });
 
     await sessionModel.deleteOne({ userId: user._id });
-
-    return sessionModel.create({
+    const session = await sessionModel.create({
       userId: user._id,
       accessToken,
       refreshToken,
       accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
       refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
+    return session
 
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
