@@ -1,16 +1,16 @@
 import createHttpError from "http-errors";
 
-import { User } from "../models/user.js";
+import { userModel } from "../models/user.js";
 import { sessionModel } from "../models/session.js";
 
 export async function auth(request, response, next) {
-  const { authorization } = request.headers;
+  const authorization = request.get('Authorization');
 
   if (typeof authorization !== "string") {
     throw new createHttpError.Unauthorized("Please provide your access token");
   }
 
-  const { bearer, accessToken } = authorization.split(" ", 2);
+  const [ bearer, accessToken ] = authorization.split(" ", 2);
 
   if (bearer !== "Bearer" || typeof authorization !== "string") {
     throw new createHttpError.Unauthorized("Please provide your access token");
@@ -25,7 +25,7 @@ export async function auth(request, response, next) {
     throw new createHttpError.Unauthorized("Access token is expired");
   }
 
-  const user = await User.findById(session.userId);
+  const user = await userModel.findById(session.userId);
 
   if (user === null) {
     throw new createHttpError.Unauthorized("User not found");

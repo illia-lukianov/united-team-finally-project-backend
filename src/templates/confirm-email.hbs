@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Your Email</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding: 20px;
+    }
+    .header {
+      background-color: rgb(61, 34, 24);
+      color: #fff;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .content h2 {
+      color: rgb(61, 34, 24);
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin: 20px 0;
+      background-color: #9b6c43;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 30px;
+    }
+    .footer a {
+      color: #999;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      Tasteorama
+    </div>
+    <div class="content">
+      <h2>Підтвердіть свій email</h2>
+      <p>Привіт!</p>
+      <p>Дякуємо, що зареєструвалися на Testeorama – твоєму улюбленому збірнику рецептів та інгредієнтів.</p>
+      <p>Щоб активувати свій акаунт, будь ласка, натисни на кнопку нижче:</p>
+      <p style="text-align:center;">
+        <a href="{{confirmEmailLink}}" class="button">Підтвердити Email</a>
+      </p>
+      <p>Якщо кнопка не працює, скопіюй цей лінк і встав його у браузер:</p>
+      <p style="">{{confirmEmailLink}}</p>
+      <p>Ласкаво просимо в Testeorama!</p>
+      <p>З найкращими побажаннями,<br>Команда Testeorama</p>
+    </div>
+    <div class="footer">
+      &copy; 2025 Testeorama. Усі права захищені.<br>
+      Якщо ви не реєструвалися, просто ігноруйте цей лист.
+    </div>
+  </div>
+</body>
+</html>

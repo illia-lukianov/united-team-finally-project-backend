@@ -3,12 +3,13 @@ import { getUserInfo } from '../services/users.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import createHttpError from 'http-errors';
 
-export const getUserInfoController = ctrlWrapper(async (req, res) => {
-  const { sessionId } = req.cookies;
+export const getUserInfoController = ctrlWrapper(async (req, res) => {  
 
-  if (!isValidObjectId(sessionId)) throw createHttpError(400, 'Wrong session ID');
+  const { id } = req.user;
 
-  const userInfo = await getUserInfo(sessionId);
+  if (!isValidObjectId(id)) throw createHttpError(400, 'Wrong user ID');
+
+  const userInfo = await getUserInfo(id);
 
   if (!userInfo) throw createHttpError(404, 'User not found');
 
