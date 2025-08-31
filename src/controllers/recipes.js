@@ -16,6 +16,8 @@ import uploadToStorage from '../utils/uploadToStorage.js';
 export const getRecipesController = async (req, res) => {
   const result = await getRecipesWithFiltering([], req.query);
 
+  if (result.item.length === 0) throw createHttpError(404, 'Recipes not found');
+
   res.json({
     status: 200,
     message: 'Successfully found recipes!',
@@ -26,7 +28,7 @@ export const getRecipesController = async (req, res) => {
 export async function getRecipeByIdController(req, res) {
   const recipe = await getRecipeById(req.params.id);
 
-  if (!recipe) throw createHttpError(404, 'Recipe not found');
+  if (Object.keys(recipe).length === 0) throw createHttpError(404, 'Recipe not found');
 
   res.json({
     status: 200,
@@ -65,6 +67,9 @@ export async function deleteRecipeController(req, res) {
 
 export async function getOwnRecipesController(req, res) {
   const recipes = await getOwnRecipes(req.user.id, req.query);
+
+  if (result.item.length === 0) throw createHttpError(404, 'Recipes not found');
+
   res.json({
     status: 200,
     message: 'Successfully fetched recipes',
@@ -120,6 +125,8 @@ export async function removeRecipeFromFavouritesController(req, res) {
 
 export async function getFavouriteRecipesController(req, res) {
   const favouriteRecipes = await getFavouriteRecipes(req.user.id, req.query);
+
+  if (result.item.length === 0) throw createHttpError(404, 'Recipes not found');
 
   res.json({
     status: 200,
