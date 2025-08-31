@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient, ObjectId } from 'mongodb';
 
 async function migrateIds() {
   const nameUser = process.env.MONGODB_USER;
@@ -12,23 +12,20 @@ async function migrateIds() {
   try {
     await client.connect();
     const db = client.db(nameDb);
-    const collection = db.collection("ingridients");
+    const collection = db.collection('ingridients');
 
-    const docs = await collection.find({ _id: { $type: "string" } }).toArray();
+    const docs = await collection.find({ _id: { $type: 'string' } }).toArray();
 
     if (!docs.length) {
-      console.log("Документів зі string _id не знайдено");
+      console.log('Документів зі string _id не знайдено');
       return;
     }
 
-    const ops = docs.flatMap(doc => {
+    const ops = docs.flatMap((doc) => {
       const newId = new ObjectId();
       const newDoc = { ...doc, _id: newId };
 
-      return [
-        { insertOne: { document: newDoc } },
-        { deleteOne: { filter: { _id: doc._id } } }
-      ];
+      return [{ insertOne: { document: newDoc } }, { deleteOne: { filter: { _id: doc._id } } }];
     });
 
     await collection.bulkWrite(ops);

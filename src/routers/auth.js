@@ -19,9 +19,15 @@ import {
   resetPwdController,
 } from '../controllers/auth.js';
 
+
 const router = express.Router();
 
-router.post('/register', validateBody(registerUserSchema), ctrlWrapper(registerController));
+router.post(
+  '/register',
+  validateBody(registerUserSchema),
+  ctrlWrapper(registerController)
+);
+router.post('/confirm-email', validateBody(confirmEmailSchema), ctrlWrapper(confirmEmailController))
 router.post('/login', validateBody(loginSchema), ctrlWrapper(loginController));
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 router.post('/logout', ctrlWrapper(logoutController));

@@ -33,11 +33,7 @@ responses:
               type: string
               example: Recipe with id:68a9e1eac172cbefce0cde83 is successfully added to favourites
             data:
-              type: array
-              description: Array of favourite recipes id's
-              items:
-                type: string
-                example: 68a9e1eac172cbefce0cde83
+              $ref: ../../../components/schemas/recipe.yaml
 
   '400':
     $ref: ../../../components/responses/400.yaml
