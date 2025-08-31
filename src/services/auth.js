@@ -1,5 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
+import { randomBytes } from 'crypto';
+
 import Handlebars from 'handlebars';
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
@@ -8,56 +10,55 @@ import getEnvVariables from '../utils/getEnvVariables.js';
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
 import { sendMail } from '../utils/sendMail.js';
-import { verifyGoogleToken } from '../utils/googleOauth.js';
 
-export const googleAuth = async (req, res) => {
-  try {
-    const { credential } = req.body;
-    if (!credential) {
-      return res.status(400).json({ message: 'Не передано Google credential' });
-    }
+// export const googleAuth = async (req, res) => {
+//   try {
+//     const { credential } = req.body;
+//     if (!credential) {
+//       return res.status(400).json({ message: 'Не передано Google credential' });
+//     }
 
-    const googleUser = await verifyGoogleToken(credential);
+//     const googleUser = await verifyGoogleToken(credential);
 
-    if (!googleUser || !googleUser.email_verified) {
-      return res.status(401).json({ message: 'Невірний Google токен' });
-    }
+//     if (!googleUser || !googleUser.email_verified) {
+//       return res.status(401).json({ message: 'Невірний Google токен' });
+//     }
 
-    let user = await userModel.findOne({ email: googleUser.email });
-    if (!user) {
-      user = await userModel.create({
-        email: googleUser.email,
-        name: googleUser.name,
-        avatarURL: googleUser.picture,
-        password: null,
-      });
-    }
+//     let user = await userModel.findOne({ email: googleUser.email });
+//     if (!user) {
+//       user = await userModel.create({
+//         email: googleUser.email,
+//         name: googleUser.name,
+//         avatarURL: googleUser.picture,
+//         password: null,
+//       });
+//     }
 
-    const accessToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '15m' });
+//     const accessToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '15m' });
 
-    const refreshToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '7d' });
+//     const refreshToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '7d' });
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: false, // true для продакшена (HTTPS)
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+//     res.cookie('refreshToken', refreshToken, {
+//       httpOnly: true,
+//       secure: false, // true для продакшена (HTTPS)
+//       sameSite: 'lax',
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
 
-    res.status(200).json({
-      accessToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        name: user.name,
-        avatarURL: user.avatarURL,
-      },
-    });
-  } catch (error) {
-    console.error('Google Auth Error:', error);
-    res.status(500).json({ message: 'Помилка авторизації Google' });
-  }
-};
+//     res.status(200).json({
+//       accessToken,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         name: user.name,
+//         avatarURL: user.avatarURL,
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Google Auth Error:', error);
+//     res.status(500).json({ message: 'Помилка авторизації Google' });
+//   }
+// };
 
 const CONFIRM_EMAIL_TEMPLATE = fs.readFileSync(
   path.resolve('src/templates/confirm-email.hbs'),
@@ -258,15 +259,15 @@ export async function resetPwd(token, password) {
 export async function loginOrRegister(email, name) {
   let user = await userModel.findOne({ email });
   if (user === null) {
-    const password = await bcrypt.hash(crypto.randomBytes(30).toString('base64'), 10);
+    const password = await bcrypt.hash(randomBytes(30).toString('base64'), 10);
     user = await userModel.create({ email, name, password });
   }
   await sessionModel.deleteOne({ userId: user._id });
 
   return sessionModel.create({
     userId: user._id,
-    accessToken: crypto.randomBytes(30).toString('base64'),
-    refreshToken: crypto.randomBytes(30).toString('base64'),
+    accessToken: randomBytes(30).toString('base64'),
+    refreshToken: randomBytes(30).toString('base64'),
     accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });

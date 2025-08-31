@@ -1,4 +1,3 @@
-import { verifyGoogleToken } from '../utils/googleOauth.js';
 import { userModel } from '../models/user.js';
 import {
   loginOrRegister,
@@ -131,80 +130,39 @@ export async function resetPwdController(request, response) {
   });
 }
 
- export async function getOauthController(request, response) {
-   const url = await getOAuthURL();
+export async function getOauthController(request, response) {
+  const url = await getOAuthURL();
 
-   response.json({
-     status: 200,
-     message: 'Successfully get oauth url',
-     data: {
-       oauth_url: url,
-     },
-   });
- }
+  response.json({
+    status: 200,
+    message: 'Successfully get oauth url',
+    data: {
+      oauth_url: url,
+    },
+  });
+}
 
- export async function confirmOauthController(request, response) {
-   console.log('Received OAuth code:', request.body.code);
-   const ticket = await validateCode(request.body.code);
+export async function confirmOauthController(request, response) {
+  console.log('Received OAuth code:', request.body.code);
+  const ticket = await validateCode(request.body.code);
 
-   const session = await loginOrRegister(ticket.payload.email, ticket.payload.name);
+  const session = await loginOrRegister(ticket.payload.email, ticket.payload.name);
 
-   response.cookie('sessionId', session._id, {
-     httpOnly: true,
-     expire: session.refreshTokenValidUntil,
-   });
+  response.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
 
-   response.cookie('refreshToken', session.refreshToken, {
-     httpOnly: true,
-     expire: session.refreshTokenValidUntil,
-   });
+  response.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
 
-   response.json({
-     status: 201,
-     message: 'Login via Google was successful',
-     data: {
-       accessToken: session.accessToken,
-     },
-   });
- }
-
-export async function googleLoginController(req, res) {
-  try {
-    console.log('=== GOOGLE OAUTH DEBUG ===');
-    console.log('GOOGLE_CLIENT_ID:', getEnvVariables('GOOGLE_CLIENT_ID'));
-    console.log('GOOGLE_CLIENT_SECRET:', getEnvVariables('GOOGLE_CLIENT_SECRET'));
-    console.log('REQUEST BODY:', req.body);
-
-    const { token } = req.body;
-
-    if (!token) {
-      return res.status(400).json({ message: 'Missing Google token' });
-    }
-
-    const payload = await verifyGoogleToken(token);
-    const { email, name } = payload;
-
-    const session = await loginOrRegister(email, name);
-
-    res.cookie('sessionId', session._id, {
-      httpOnly: true,
-      expires: session.refreshTokenValidUntil,
-    });
-
-    res.cookie('refreshToken', session.refreshToken, {
-      httpOnly: true,
-      expires: session.refreshTokenValidUntil,
-    });
-
-    res.json({
-      status: 201,
-      message: 'Google login successful',
-      data: {
-        accessToken: session.accessToken,
-      },
-    });
-  } catch (error) {
-    console.error('Google login error:', error);
-    return res.status(500).json({ message: error.message });
-  }
+  response.json({
+    status: 201,
+    message: 'Login via Google was successful',
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
 }

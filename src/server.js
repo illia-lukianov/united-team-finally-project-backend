@@ -44,7 +44,6 @@ export default function setupServer() {
 
     }),
   );
-  app.use('/auth', authRoutes);
   app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
   app.use('/api-docs', swaggerDocs());
