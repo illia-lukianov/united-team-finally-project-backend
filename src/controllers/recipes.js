@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { getRecipesWithFiltering } from '../services/recipes.js';
+import { getRecipesWithFiltering, updateOwnRecipe } from '../services/recipes.js';
 import getEnvVariables from '../utils/getEnvVariables.js';
 import {
   addToFavourites,
