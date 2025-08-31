@@ -42,6 +42,9 @@ export async function confirmEmailController(request, response) {
   response.json({
     status: 200,
     message: 'Confirmed email successfully',
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 }
 
