@@ -116,6 +116,23 @@ export async function confirmEmail(token) {
     user.isConfirmed = true;
     await user.save();
 
+    const accessToken = jwt.sign({ userId: user._id, email: user.email }, getEnvVariables('SECRET_JWT'), {
+      expiresIn: '30m',
+    });
+    const refreshToken = jwt.sign({ userId: user._id }, getEnvVariables('SECRET_JWT'), {
+      expiresIn: '7d',
+    });
+
+    await sessionModel.deleteOne({ userId: user._id });
+
+    return sessionModel.create({
+      userId: user._id,
+      accessToken,
+      refreshToken,
+      accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
+      refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+    
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       throw new createHttpError.Unauthorized('Token is expired');
