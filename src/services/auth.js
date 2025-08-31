@@ -59,13 +59,13 @@ export async function confirmEmail(token) {
     const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
 
     const user = await userModel.findOne({ email: decoded.email });
-    
+
     if (!user) {
       throw new createHttpError.NotFound('User not found');
     }
 
-    if (user.isConfirmed) {
-      return;
+    if (user.isConfirmed === "true") {
+      throw new createHttpError.Conflict('Email is already confirmed');
     } else {
       user.isConfirmed = true;
       await user.save();
