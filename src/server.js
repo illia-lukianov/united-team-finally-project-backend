@@ -33,14 +33,18 @@ export default function setupServer() {
     }),
   );
   app.use(express.json());
+  app.use(cookieParser());
+  app.use(cors({ origin: getEnvVariables('FRONTEND_URL') || 'http://localhost:5173', credentials: true }));
   app.use(
     pino({
       transport: {
         target: 'pino-pretty',
       },
       level: 'error',
+
     }),
   );
+  app.use('/auth', authRoutes);
   app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
   app.use('/api-docs', swaggerDocs());

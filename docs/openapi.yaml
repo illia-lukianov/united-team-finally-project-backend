@@ -11,6 +11,8 @@ info:
 servers:
   - url: https://united-team-finally-project-backend.onrender.com
 tags:
+  - name: Auth
+    description: Operation with auth
   - name: Users
     description: Operation with users
   - name: Recipes
@@ -20,6 +22,30 @@ tags:
   - name: Ingredients
     description: Operation with ingredients
 paths:
+  /auth/register:
+    post:
+      $ref: '../swagger/paths/auth/register/post.yaml'
+  /auth/login:
+    post:
+      $ref: '../swagger/paths/auth/login/post.yaml'
+  /auth/refresh:
+    post:
+      $ref: '../swagger/paths/auth/refresh/post.yaml'
+  /auth/logout:
+    post:
+      $ref: '../swagger/paths/auth/logout/post.yaml'
+  /auth/request-password-reset:
+    post:
+      $ref: '../swagger/paths/auth/sendToMailForResetPasssword/post.yaml'
+  /auth/reset-password:
+    post:
+      $ref: '../swagger/paths/auth/resetPassword/post.yaml'
+  /auth/get-oauth-url:
+    get:
+      $ref: '../swagger/paths/auth/get-oauth-url/get.yaml'
+  /auth/confirm-oauth:
+    post:
+      $ref: '../swagger/paths/auth/confirm-oauth/post.yaml'
   /users:
     get:
       $ref: '../swagger/paths/users/get.yaml'

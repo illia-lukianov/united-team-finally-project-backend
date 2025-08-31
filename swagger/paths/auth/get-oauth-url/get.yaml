@@ -1,0 +1,26 @@
+tags:
+  - Auth
+operationId: getOauthURL
+security: []
+summary: Get URL for OAuth authorization
+description: Gets the URL to redirect the user to the Google authorization page.
+responses:
+  '200':
+    description: Successfully received URL for OAuth
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+            message:
+              type: string
+            data:
+              type: object
+              properties:
+                oauth_url:
+                  type: string
+                  description: URL for OAuth authorization
+  '401':
+    $ref: ../../../components/responses/401.yaml

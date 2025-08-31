@@ -1,5 +1,7 @@
 tags:
   - Auth
+operationId: registerUser
+security: []
 summary: Register a new user
 requestBody:
   required: true
@@ -41,6 +43,6 @@ responses:
             refreshToken:
               type: string
   '400':
-    $ref: '../../components/responses/400.yaml'
+    $ref: ../../../components/responses/400.yaml
   '409':
     description: Email already in use

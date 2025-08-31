@@ -1,0 +1,38 @@
+tags:
+  - Auth
+operationId: confirmOauth
+security: []
+summary: OAuth authorization confirmation
+description: Confirming the OAuth code after Google authorization.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          code:
+            type: string
+            description: OAuth confirmation code
+        required:
+          - code
+responses:
+  '201':
+    description: Successful authorization via Google
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+            message:
+              type: string
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  description: Access token
+  '401':
+    $ref: ../../../components/responses/401.yaml
