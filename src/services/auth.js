@@ -8,6 +8,56 @@ import getEnvVariables from '../utils/getEnvVariables.js';
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
 import { sendMail } from '../utils/sendMail.js';
+import { verifyGoogleToken } from '../utils/googleOauth.js';
+
+export const googleAuth = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ message: 'Не передано Google credential' });
+    }
+
+    const googleUser = await verifyGoogleToken(credential);
+
+    if (!googleUser || !googleUser.email_verified) {
+      return res.status(401).json({ message: 'Невірний Google токен' });
+    }
+
+    let user = await userModel.findOne({ email: googleUser.email });
+    if (!user) {
+      user = await userModel.create({
+        email: googleUser.email,
+        name: googleUser.name,
+        avatarURL: googleUser.picture,
+        password: null,
+      });
+    }
+
+    const accessToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '15m' });
+
+    const refreshToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '7d' });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false, // true для продакшена (HTTPS)
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      accessToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        avatarURL: user.avatarURL,
+      },
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(500).json({ message: 'Помилка авторизації Google' });
+  }
+};
 
 export async function registerUser(payload) {
   const user = await userModel.findOne({ email: payload.email });

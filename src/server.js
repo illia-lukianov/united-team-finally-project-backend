@@ -10,13 +10,14 @@ import cookieParser from 'cookie-parser';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
 import { UPLOAD_DIR } from './constants/index.js';
 import path from 'node:path';
-
+import authRoutes from './routers/auth.js';
 const PORT = getEnvVariables('PORT') ?? '3000';
 
 export default function setupServer() {
   const app = express();
-  app.use(cors());
   app.use(express.json());
+  app.use(cookieParser());
+  app.use(cors({ origin: getEnvVariables('FRONTEND_URL') || 'http://localhost:5173', credentials: true }));
   app.use(
     pino({
       transport: {
@@ -25,6 +26,7 @@ export default function setupServer() {
       // level: "error",
     }),
   );
+  app.use('/auth', authRoutes);
   app.use('/auth/uploads', express.static(UPLOAD_DIR));
   app.use(cookieParser());
   app.use('/api-docs', swaggerDocs());
