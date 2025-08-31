@@ -11,57 +11,13 @@ import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
 import { sendMail } from '../utils/sendMail.js';
 
-// export const googleAuth = async (req, res) => {
-//   try {
-//     const { credential } = req.body;
-//     if (!credential) {
-//       return res.status(400).json({ message: 'Не передано Google credential' });
-//     }
-
-//     const googleUser = await verifyGoogleToken(credential);
-
-//     if (!googleUser || !googleUser.email_verified) {
-//       return res.status(401).json({ message: 'Невірний Google токен' });
-//     }
-
-//     let user = await userModel.findOne({ email: googleUser.email });
-//     if (!user) {
-//       user = await userModel.create({
-//         email: googleUser.email,
-//         name: googleUser.name,
-//         avatarURL: googleUser.picture,
-//         password: null,
-//       });
-//     }
-
-//     const accessToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '15m' });
-
-//     const refreshToken = jwt.sign({ id: user._id }, getEnvVariables('SECRET_JWT'), { expiresIn: '7d' });
-
-//     res.cookie('refreshToken', refreshToken, {
-//       httpOnly: true,
-//       secure: false, // true для продакшена (HTTPS)
-//       sameSite: 'lax',
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-
-//     res.status(200).json({
-//       accessToken,
-//       user: {
-//         id: user._id,
-//         email: user.email,
-//         name: user.name,
-//         avatarURL: user.avatarURL,
-//       },
-//     });
-//   } catch (error) {
-//     console.error('Google Auth Error:', error);
-//     res.status(500).json({ message: 'Помилка авторизації Google' });
-//   }
-// };
-
 const CONFIRM_EMAIL_TEMPLATE = fs.readFileSync(
   path.resolve('src/templates/confirm-email.hbs'),
+  { encoding: 'utf-8' },
+);
+
+const RESET_PWD_TEMPLATE = fs.readFileSync(
+  path.resolve('src/templates/reset-password.hbs'),
   { encoding: 'utf-8' },
 );
 
@@ -132,7 +88,7 @@ export async function confirmEmail(token) {
       accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
       refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
-    
+
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       throw new createHttpError.Unauthorized('Token is expired');
@@ -219,29 +175,26 @@ export async function logoutUser(session_id) {
 }
 
 export async function requestResetEmail(email) {
-  console.log(`Received reset request for email: ${email}`);
 
   const user = await userModel.findOne({ email });
 
   if (user === null) {
-    console.log(`User not found for email: ${email}`);
-
     throw new createHttpError.NotFound('User was not found');
   }
-
-  console.log(`User found: ${user._id}, sending reset email`);
 
   const token = jwt.sign({ sub: user._id, name: user.name }, getEnvVariables('SECRET_JWT'), {
     expiresIn: '10m',
   });
 
+  const template = Handlebars.compile(RESET_PWD_TEMPLATE);
+
   await sendMail({
     to: email,
     subject: 'Reset password',
-    html: `<p>To reset password please click the <a href="http://localhost:8080/reset-password/${token}">Link</a></p>`,
+    html: template({
+      resetPasswordLink: `https://united-team-finally-project-front-e.vercel.app/auth/reset-password/${token}`,
+    }),
   });
-
-  console.log(`Password reset email sent to: ${email}`);
 }
 
 export async function resetPwd(token, password) {

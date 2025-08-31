@@ -34,7 +34,6 @@ export default function setupServer() {
   );
   app.use(express.json());
   app.use(cookieParser());
-  app.use(cors({ origin: getEnvVariables('FRONTEND_URL') || 'http://localhost:5173', credentials: true }));
   app.use(
     pino({
       transport: {
