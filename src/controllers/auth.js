@@ -1,5 +1,6 @@
 import { userModel } from '../models/user.js';
 import {
+  confirmEmail,
   loginOrRegister,
   loginUser,
   logoutUser,
@@ -22,8 +23,7 @@ export async function registerController(request, response) {
   });
 }
 export async function confirmEmailController(request, response) {
-  await confirmEmail(request.body.token);
-    const session = await loginUser(request.body.email, request.body.password);
+  const session = await confirmEmail(request.body.token);
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
@@ -38,9 +38,13 @@ export async function confirmEmailController(request, response) {
     sameSite: 'None',
     secure: true,
   });
+
   response.json({
     status: 200,
-    message: 'Confirmed email successfully',
+    message: 'Confirmed email and loged in successfully',
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 }
 
@@ -109,9 +113,8 @@ export async function logoutController(request, response) {
 }
 
 export async function requestResetEmailController(request, response) {
-  console.log(`Received reset request for email: ${request.body.email}`);
   await requestResetEmail(request.body.email);
-  console.log('Password reset email sent successfully');
+  
   response.json({
     status: 200,
     message: 'Message sent successfully',

@@ -25,13 +25,9 @@ export async function registerUser(payload) {
 
   const newUser = await userModel.create({ ...payload, password: hashedPassword, isConfirmed: false });
 
-  const token = jwt.sign(
-    { email: payload.email },
-    getEnvVariables('SECRET_JWT'),
-    { expiresIn: '30m' }
-  );
+  const token = jwt.sign({ email: payload.email }, getEnvVariables('SECRET_JWT'), { expiresIn: '300m' });
 
-  const template = Handlebars.compile(CONFIRM_EMAIL_TEMPLATE)
+  const template = Handlebars.compile(CONFIRM_EMAIL_TEMPLATE);
 
   const mail = await sendMail({
     to: payload.email,
@@ -42,7 +38,7 @@ export async function registerUser(payload) {
   });
 
   if (!mail.accepted || mail.accepted.length === 0) {
-    throw createHttpError(500, "Failed to send the email, please try again later.");
+    throw createHttpError(500, 'Failed to send the email, please try again later.');
   }
 
   return newUser;
@@ -58,6 +54,10 @@ export async function confirmEmail(token) {
       throw new createHttpError.NotFound('User not found');
     }
 
+    if (user === null) {
+      throw new createHttpError.Unauthorized('Email or password is incorrect');
+    }
+
     if (user.isConfirmed) {
       return;
     }
@@ -65,6 +65,22 @@ export async function confirmEmail(token) {
     user.isConfirmed = true;
     await user.save();
 
+    const accessToken = jwt.sign({ userId: user._id, email: user.email }, getEnvVariables('SECRET_JWT'), {
+      expiresIn: '30m',
+    });
+    const refreshToken = jwt.sign({ userId: user._id }, getEnvVariables('SECRET_JWT'), {
+      expiresIn: '7d',
+    });
+
+    await sessionModel.deleteOne({ userId: user._id });
+
+    return sessionModel.create({
+      userId: user._id,
+      accessToken,
+      refreshToken,
+      accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
+      refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       throw new createHttpError.Unauthorized('Token is expired');
@@ -151,13 +167,9 @@ export async function logoutUser(session_id) {
 }
 
 export async function requestResetEmail(email) {
-  console.log(`Received reset request for email: ${email}`);
-
   const user = await userModel.findOne({ email });
 
   if (user === null) {
-    console.log(`User not found for email: ${email}`);
-
     throw new createHttpError.NotFound('User was not found');
   }
 
@@ -170,7 +182,7 @@ export async function requestResetEmail(email) {
   await sendMail({
     to: email,
     subject: 'Reset password',
-    html: `<p>To reset password please click the <a href="http://localhost:8080/reset-password/${token}">Link</a></p>`,
+    html: `<p>To reset password please click the <a href="https://united-team-finally-project-front-e.vercel.app/auth/reset-password/${token}">Link</a></p>`,
   });
 
   console.log(`Password reset email sent to: ${email}`);
@@ -178,20 +190,16 @@ export async function requestResetEmail(email) {
 
 export async function resetPwd(token, password) {
   try {
-    console.log('Verifying token...');
-    const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
 
-    console.log('Token verified, finding user...');
+    const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
 
     const user = await userModel.findById(decoded.sub);
 
     if (user === null) {
-      console.log('User not found');
       throw new createHttpError.NotFound('User was not found');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Updating password...');
 
     await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
   } catch (error) {

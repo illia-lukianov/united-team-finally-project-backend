@@ -7,8 +7,10 @@ import {
   requestResetEmailSchema,
   resetPasswordSchema,
   confirmOauthSchema,
+  confirmEmailSchema,
 } from '../validation/auth.js';
 import {
+  confirmEmailController,
   confirmOauthController,
   getOauthController,
   loginController,
