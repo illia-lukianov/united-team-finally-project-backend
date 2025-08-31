@@ -45,7 +45,7 @@ export const getRecipes = async (startQuery = [], params = null) => {
         },
       },
     },
-    { $unset: ['ingredients.id', 'ingredients._id', 'ingredientsData'] },
+    { $unset: ['ingredients.id', 'ingredientsData'] },
   );
 
   if (params !== null) {
