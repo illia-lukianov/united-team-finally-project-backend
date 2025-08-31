@@ -27,6 +27,10 @@ const userSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: 'Recipe' }],
       default: [],
     },
+    expiresAt: { 
+      type: Date, 
+      index: { expires: 0 } 
+    },
   },
   {
     timestamps: true,

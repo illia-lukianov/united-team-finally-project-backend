@@ -29,12 +29,12 @@ export async function registerUser(payload) {
 
   const hashedPassword = await bcrypt.hash(payload.password, 10);
 
-  const newUser = await userModel.create({ ...payload, password: hashedPassword, isConfirmed: false });
+  const newUser = await userModel.create({ ...payload, password: hashedPassword, isConfirmed: false, expiresAt: new Date(Date.now() + 15 * 60 * 1000), });
 
   const token = jwt.sign(
     { email: payload.email },
     getEnvVariables('SECRET_JWT'),
-    { expiresIn: '30m' }
+    { expiresIn: '15m' }
   );
 
   const template = Handlebars.compile(CONFIRM_EMAIL_TEMPLATE)
@@ -68,6 +68,8 @@ export async function confirmEmail(token) {
       throw new createHttpError.Conflict('Email is already confirmed');
     } else {
       user.isConfirmed = true;
+      user.isConfirmed = true;
+      user.expiresAt = null;
       await user.save();
     }
 
@@ -182,7 +184,7 @@ export async function requestResetEmail(email) {
   }
 
   const token = jwt.sign({ sub: user._id, name: user.name }, getEnvVariables('SECRET_JWT'), {
-    expiresIn: '10m',
+    expiresIn: '15m',
   });
 
   const template = Handlebars.compile(RESET_PWD_TEMPLATE);
