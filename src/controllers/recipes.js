@@ -26,7 +26,7 @@ export const getRecipesController = async (req, res) => {
 export async function getRecipeByIdController(req, res) {
   const recipe = await getRecipeById(req.params.id);
 
-  if (!recipe) throw createHttpError(404, 'Recipe not found');
+  if (Object.keys(recipe).length === 0) throw createHttpError(404, 'Recipe not found');
 
   res.json({
     status: 200,
