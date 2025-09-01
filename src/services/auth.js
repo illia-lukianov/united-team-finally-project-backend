@@ -83,7 +83,7 @@ export async function confirmEmail(token, location) {
     await sessionModel.deleteOne({ userId: user._id });
 
     const area = await getRegionByCoords(location.latitude , location.longitude);
-    console.log(area)
+    
     const session = await sessionModel.create({
       userId: user._id,
       userArea: area,

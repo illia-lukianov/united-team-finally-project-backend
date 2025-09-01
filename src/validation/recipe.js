@@ -98,4 +98,4 @@ export const updateRecipeSchema = Joi.object({
     'string.base': 'Recipe instructions must be a string!',
     'string.max': 'Recipe instructions is too long!',
   }),
-});
+}).required();

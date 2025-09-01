@@ -8,6 +8,7 @@ import {
   resetPasswordSchema,
   confirmOauthSchema,
   confirmEmailSchema,
+  refreshSchema,
 } from '../validation/auth.js';
 import {
   confirmEmailController,
@@ -31,7 +32,7 @@ router.post(
 );
 router.post('/confirm-email', validateBody(confirmEmailSchema), ctrlWrapper(confirmEmailController))
 router.post('/login', validateBody(loginSchema), ctrlWrapper(loginController));
-router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+router.post('/refresh', validateBody(refreshSchema), ctrlWrapper(refreshUserSessionController));
 router.post('/logout', ctrlWrapper(logoutController));
 router.post('/request-password-reset', validateBody(requestResetEmailSchema), ctrlWrapper(requestResetEmailController));
 router.post('/reset-password', validateBody(resetPasswordSchema), ctrlWrapper(resetPwdController));
