@@ -9,7 +9,6 @@ import {
   requestResetEmail,
   resetPwd,
 } from '../services/auth.js';
-import getEnvVariables from '../utils/getEnvVariables.js';
 import { getOAuthURL, validateCode } from '../utils/googleOauth.js';
 
 export async function registerController(request, response) {
@@ -49,7 +48,6 @@ export async function confirmEmailController(request, response) {
 }
 
 export async function loginController(request, response) {
-  console.log(request.body.location)
   const session = await loginUser(request.body.email, request.body.password, request.body.location);
 
   response.cookie('sessionId', session._id, {

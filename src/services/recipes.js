@@ -9,7 +9,6 @@ import { sessionModel } from '../models/session.js';
 export const getRecipes = async (startQuery = [], params = null) => {
   const query = [...startQuery];
 
-  //Populate 😎
   query.push(
     {
       $lookup: {
@@ -94,13 +93,6 @@ export const getRecipesWithFiltering = async (startQuery = [], params) => {
 export async function getRecipeById(recipeId) {
   const query = [{ $match: { _id: new mongoose.Types.ObjectId(String(recipeId)) } }];
   return await getRecipes(query);
-
-  // const recipe = await recipesCollection
-  //   .findById(recipeId)
-  //   .populate({ path: 'ingredients.id', select: '-_id' })
-  //   .lean()
-  //   .exec();
-  // return normalizeRecipe(recipe);
 }
 
 export async function createRecipe(payload) {
@@ -110,14 +102,15 @@ export async function createRecipe(payload) {
 
 export async function deleteRecipe(recipeId, userId) {
   const session = await mongoose.startSession();
-
+  let deletedRecipe = null;
   await session.withTransaction(async () => {
-    const deletedRecipe = await recipesCollection.findOneAndDelete({ _id: recipeId, owner: userId }, { session });
+    deletedRecipe = await recipesCollection.findOneAndDelete({ _id: recipeId, owner: userId }, { session });
     if (!deletedRecipe) throw createHttpError(404, 'Recipe not found or you are not the owner');
     await userModel.updateMany({ favourites: recipeId }, { $pull: { favourites: recipeId } }, { session });
   });
 
   session.endSession();
+  return deleteRecipe;
 }
 
 export async function getOwnRecipes(userId, params) {
