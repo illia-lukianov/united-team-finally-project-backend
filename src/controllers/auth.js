@@ -28,14 +28,14 @@ export async function confirmEmailController(request, response) {
   response.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
   response.json({
@@ -53,14 +53,14 @@ export async function loginController(request, response) {
   response.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
 
@@ -80,14 +80,14 @@ export async function refreshUserSessionController(request, response) {
   response.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expires: session.refreshTokenValidUntil,
-    sameSite: 'None',
+    sameSite: 'none',
     secure: true,
   });
 
@@ -150,11 +150,15 @@ export async function confirmOauthController(request, response) {
   response.cookie('sessionId', session._id, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
+    sameSite: 'none',
+    secure: true,
   });
 
   response.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
     expire: session.refreshTokenValidUntil,
+    sameSite: 'none',
+    secure: true,
   });
 
   response.json({

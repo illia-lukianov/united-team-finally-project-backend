@@ -150,7 +150,7 @@ export async function refreshUserSession(sessionId, refreshToken, location) {
     throw new createHttpError.Unauthorized('Session not found');
   }
   if (session.refreshToken !== refreshToken) {
-    throw new createHttpError.Unauthorized('Refresh token us invalid');
+    throw new createHttpError.Unauthorized('Refresh token is invalid');
   }
   if (session.refreshTokenValidUntil < new Date()) {
     throw new createHttpError.Unauthorized('Refresh token is expired');
