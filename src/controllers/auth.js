@@ -75,7 +75,7 @@ export async function loginController(request, response) {
 
 export async function refreshUserSessionController(request, response) {
   const { sessionId, refreshToken } = request.cookies;
-  const session = await refreshUserSession(sessionId, refreshToken);
+  const session = await refreshUserSession(sessionId, refreshToken, request.body.location);
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
@@ -145,7 +145,7 @@ export async function getOauthController(request, response) {
 export async function confirmOauthController(request, response) {
   const ticket = await validateCode(request.body.code);
 
-  const session = await loginOrRegister(ticket.payload.email, ticket.payload.name);
+  const session = await loginOrRegister(ticket.payload.email, ticket.payload.name, request.body.location);
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,

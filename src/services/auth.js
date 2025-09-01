@@ -143,7 +143,7 @@ export async function loginUser(email, password, location) {
   return session
 }
 
-export async function refreshUserSession(sessionId, refreshToken) {
+export async function refreshUserSession(sessionId, refreshToken, location) {
   const session = await sessionModel.findById(sessionId);
 
   if (session === null) {
@@ -171,8 +171,11 @@ export async function refreshUserSession(sessionId, refreshToken) {
 
   await sessionModel.deleteOne({ _id: session._id });
 
+  const area = await getRegionByCoords(location.latitude , location.longitude );
+
   return sessionModel.create({
     userId: session.userId,
+    userArea: area,
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
     accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
@@ -235,16 +238,24 @@ export async function resetPwd(token, password) {
   }
 }
 
-export async function loginOrRegister(email, name) {
+export async function loginOrRegister(email, name, location) {
   let user = await userModel.findOne({ email });
   if (user === null) {
     const password = await bcrypt.hash(randomBytes(30).toString('base64'), 10);
     user = await userModel.create({ email, name, password });
   }
+
+  user.isConfirmed = true;
+  user.expiresAt = null;
+  await user.save();
+
   await sessionModel.deleteOne({ userId: user._id });
+
+  const area = await getRegionByCoords(location.latitude , location.longitude );
 
   return sessionModel.create({
     userId: user._id,
+    userArea: area,
     accessToken: randomBytes(30).toString('base64'),
     refreshToken: randomBytes(30).toString('base64'),
     accessTokenValidUntil: new Date(Date.now() + 10 * 60 * 1000),
