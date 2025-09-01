@@ -12,6 +12,7 @@
     "preview-docs": "redocly preview-docs"
   },
   "dependencies": {
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",

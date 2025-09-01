@@ -9,6 +9,7 @@ import getEnvVariables from '../utils/getEnvVariables.js';
 import { userModel } from '../models/user.js';
 import { sessionModel } from '../models/session.js';
 import { sendMail } from '../utils/sendMail.js';
+import { getRegionByCoords } from '../utils/getRegionByCoords.js';
 
 const CONFIRM_EMAIL_TEMPLATE = fs.readFileSync(
   path.resolve('src/templates/confirm-email.hbs'),
@@ -54,7 +55,7 @@ export async function registerUser(payload) {
   return newUser;
 }
 
-export async function confirmEmail(token) {
+export async function confirmEmail(token, location) {
   try {
     const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
 
@@ -80,9 +81,13 @@ export async function confirmEmail(token) {
       expiresIn: '7d',
     });
 
-    await sessionModel.deleteOne({ userId: user._id });
+    await sessionModel.deleteMany({ userId: user._id });
+
+    const area = await getRegionByCoords(location.latitude , location.longitude );
+
     const session = await sessionModel.create({
       userId: user._id,
+      userArea: area,
       accessToken,
       refreshToken,
       accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
@@ -103,7 +108,7 @@ export async function confirmEmail(token) {
   }
 }
 
-export async function loginUser(email, password) {
+export async function loginUser(email, password, location) {
   const user = await userModel.findOne({ email });
 
   if (user === null) {
@@ -125,16 +130,21 @@ export async function loginUser(email, password) {
     expiresIn: '7d',
   });
 
-  await sessionModel.deleteOne({ userId: user._id });
+  const area = await getRegionByCoords(location.latitude , location.longitude );
 
-  return sessionModel.create({
+  await sessionModel.deleteMany({ userId: user._id });
+  const session = await sessionModel.create({
     userId: user._id,
+    userArea: area,
     accessToken,
     refreshToken,
     accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
+  console.log("🚀 ~ loginUser ~ session:", session)
+  return session
 }
+
 export async function refreshUserSession(sessionId, refreshToken) {
   const session = await sessionModel.findById(sessionId);
 
@@ -161,7 +171,7 @@ export async function refreshUserSession(sessionId, refreshToken) {
     expiresIn: '7d',
   });
 
-  await sessionModel.deleteOne({ _id: session._id });
+  await sessionModel.deleteMany({ _id: session._id });
 
   return sessionModel.create({
     userId: session.userId,
@@ -172,7 +182,7 @@ export async function refreshUserSession(sessionId, refreshToken) {
   });
 }
 export async function logoutUser(session_id) {
-  await sessionModel.deleteOne({ _id: session_id });
+  await sessionModel.deleteMany({ _id: session_id });
 }
 
 export async function requestResetEmail(email) {
@@ -233,7 +243,7 @@ export async function loginOrRegister(email, name) {
     const password = await bcrypt.hash(randomBytes(30).toString('base64'), 10);
     user = await userModel.create({ email, name, password });
   }
-  await sessionModel.deleteOne({ userId: user._id });
+  await sessionModel.deleteMany({ userId: user._id });
 
   return sessionModel.create({
     userId: user._id,

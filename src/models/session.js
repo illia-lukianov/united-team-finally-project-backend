@@ -7,6 +7,10 @@ const sessionSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    userArea: {
+      type: String,
+      required: false,
+    },
     accessToken: {
       type: String,
       required: true,

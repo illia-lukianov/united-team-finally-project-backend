@@ -24,7 +24,7 @@ export async function registerController(request, response) {
   });
 }
 export async function confirmEmailController(request, response) {
-  const session = await confirmEmail(request.body.token);
+  const session = await confirmEmail(request.body.token, request.body.location);
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
@@ -49,9 +49,7 @@ export async function confirmEmailController(request, response) {
 }
 
 export async function loginController(request, response) {
-  const session = await loginUser(request.body.email, request.body.password);
-
-  const user = await userModel.findById(session.userId);
+  const session = await loginUser(request.body.email, request.body.password, request.body.location);
 
   response.cookie('sessionId', session._id, {
     httpOnly: true,
@@ -75,6 +73,7 @@ export async function loginController(request, response) {
     },
   });
 }
+
 export async function refreshUserSessionController(request, response) {
   const { sessionId, refreshToken } = request.cookies;
   const session = await refreshUserSession(sessionId, refreshToken);

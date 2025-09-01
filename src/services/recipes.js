@@ -4,6 +4,7 @@ import { recipesCollection } from '../models/recipe.js';
 import { userModel } from '../models/user.js';
 import mongoose from 'mongoose';
 import { parseFilterParams, parsePaginationParams, parseSortParams } from '../utils/parseQueryParams.js';
+import { sessionModel } from '../models/session.js';
 
 export const getRecipes = async (startQuery = [], params = null) => {
   const query = [...startQuery];
@@ -103,7 +104,8 @@ export async function getRecipeById(recipeId) {
 }
 
 export async function createRecipe(payload) {
-  return recipesCollection.create(payload);
+  const session = await sessionModel.findOne({ userId: payload.owner });
+  return recipesCollection.create({...payload, area: session.userArea});
 }
 
 export async function deleteRecipe(recipeId, userId) {
