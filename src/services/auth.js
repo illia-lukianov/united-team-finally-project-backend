@@ -82,8 +82,8 @@ export async function confirmEmail(token, location) {
 
     await sessionModel.deleteOne({ userId: user._id });
 
-    const area = await getRegionByCoords(location.latitude , location.longitude);
-    
+    const area = location ? await getRegionByCoords(location.latitude , location.longitude ) : null;
+
     const session = await sessionModel.create({
       userId: user._id,
       userArea: area,
@@ -129,7 +129,7 @@ export async function loginUser(email, password, location) {
     expiresIn: '7d',
   });
 
-  const area = await getRegionByCoords(location.latitude , location.longitude );
+  const area = location ? await getRegionByCoords(location.latitude , location.longitude ) : null;
 
   await sessionModel.deleteOne({ userId: user._id });
   const session = await sessionModel.create({
@@ -171,7 +171,7 @@ export async function refreshUserSession(sessionId, refreshToken, location) {
 
   await sessionModel.deleteOne({ _id: session._id });
 
-  const area = await getRegionByCoords(location.latitude , location.longitude );
+  const area = location ? await getRegionByCoords(location.latitude , location.longitude ) : null;
 
   return sessionModel.create({
     userId: session.userId,
@@ -251,7 +251,7 @@ export async function loginOrRegister(email, name, location) {
 
   await sessionModel.deleteOne({ userId: user._id });
 
-  const area = await getRegionByCoords(location.latitude , location.longitude );
+  const area = location ? await getRegionByCoords(location.latitude , location.longitude ) : null;
 
   return sessionModel.create({
     userId: user._id,
