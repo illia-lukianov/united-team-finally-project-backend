@@ -10,6 +10,7 @@ const sessionSchema = mongoose.Schema(
     userArea: {
       type: String,
       required: false,
+      default: null,
     },
     accessToken: {
       type: String,
