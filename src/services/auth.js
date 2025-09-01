@@ -80,7 +80,7 @@ export async function confirmEmail(token, location) {
       expiresIn: '7d',
     });
 
-    await sessionModel.deleteMany({ userId: user._id });
+    await sessionModel.deleteOne({ userId: user._id });
 
     const area = await getRegionByCoords(location.latitude , location.longitude);
 
@@ -131,7 +131,7 @@ export async function loginUser(email, password, location) {
 
   const area = await getRegionByCoords(location.latitude , location.longitude );
 
-  await sessionModel.deleteMany({ userId: user._id });
+  await sessionModel.deleteOne({ userId: user._id });
   const session = await sessionModel.create({
     userId: user._id,
     userArea: area,
@@ -169,7 +169,7 @@ export async function refreshUserSession(sessionId, refreshToken) {
     expiresIn: '7d',
   });
 
-  await sessionModel.deleteMany({ _id: session._id });
+  await sessionModel.deleteOne({ _id: session._id });
 
   return sessionModel.create({
     userId: session.userId,
@@ -180,7 +180,7 @@ export async function refreshUserSession(sessionId, refreshToken) {
   });
 }
 export async function logoutUser(session_id) {
-  await sessionModel.deleteMany({ _id: session_id });
+  await sessionModel.deleteOne({ _id: session_id });
 }
 
 export async function requestResetEmail(email) {
@@ -241,7 +241,7 @@ export async function loginOrRegister(email, name) {
     const password = await bcrypt.hash(randomBytes(30).toString('base64'), 10);
     user = await userModel.create({ email, name, password });
   }
-  await sessionModel.deleteMany({ userId: user._id });
+  await sessionModel.deleteOne({ userId: user._id });
 
   return sessionModel.create({
     userId: user._id,
