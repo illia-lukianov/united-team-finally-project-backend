@@ -69,7 +69,6 @@ export async function confirmEmail(token, location) {
       throw new createHttpError.Conflict('Email is already confirmed');
     } else {
       user.isConfirmed = true;
-      user.isConfirmed = true;
       user.expiresAt = null;
       await user.save();
     }
@@ -83,11 +82,11 @@ export async function confirmEmail(token, location) {
 
     await sessionModel.deleteMany({ userId: user._id });
 
-    const area = await getRegionByCoords(location.latitude , location.longitude );
+    const area = await getRegionByCoords(location.latitude , location.longitude);
 
     const session = await sessionModel.create({
       userId: user._id,
-      userArea: area,
+      userArea: area ?? "Unknown",
       accessToken,
       refreshToken,
       accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
@@ -141,7 +140,6 @@ export async function loginUser(email, password, location) {
     accessTokenValidUntil: new Date(Date.now() + 30 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
-  console.log("🚀 ~ loginUser ~ session:", session)
   return session
 }
 
