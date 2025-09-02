@@ -116,13 +116,6 @@ export async function deleteRecipe(recipeId, userId) {
 export async function getOwnRecipes(userId, params) {
   const query = [{ $match: { owner: new mongoose.Types.ObjectId(String(userId)) } }];
   return await getRecipesWithFiltering(query, params);
-
-  // const recipes = await recipesCollection
-  //   .find({ owner: userId })
-  //   .populate({ path: 'ingredients.id', select: '-_id' })
-  //   .lean()
-  //   .exec();
-  // return { items: normalizeRecipeArray(recipes) };
 }
 
 export async function updateOwnRecipe(recipeId, userId, payload) {
@@ -147,11 +140,19 @@ export async function addToFavourites(recipeId, userId) {
     { new: true, fields: { favourites: 1, _id: 0 } },
   );
   if (!user) throw createHttpError(404, 'User not found');
+
+  await recipesCollection.findByIdAndUpdate(
+    recipeId,
+    { $inc: { popularity: 1 } },
+    { new: true }
+  );
+
   const recipe = await recipesCollection
     .findById(recipeId)
     .populate({ path: 'ingredients.id', select: '-_id' })
     .lean()
     .exec();
+
   return normalizeRecipe(recipe);
 }
 
@@ -162,6 +163,13 @@ export async function removeFromFavourites(recipeId, userId) {
     .populate({ path: 'ingredients.id', select: '-_id' })
     .lean()
     .exec();
+
+  await recipesCollection.findByIdAndUpdate(
+    recipeId,
+    { $inc: { popularity: -1 } },
+    { new: true }
+  );
+
   return normalizeRecipe(recipe);
 }
 
@@ -170,18 +178,4 @@ export async function getFavouriteRecipes(userId, params) {
 
   const query = [{ $match: { _id: { $in: favourites } } }];
   return await getRecipesWithFiltering(query, params);
-
-  // const { favourites } = await userModel
-  //   .findById(userId)
-  //   .populate({
-  //     path: 'favourites',
-  //     select: '',
-  //     populate: {
-  //       path: 'ingredients.id',
-  //       select: '-_id',
-  //     },
-  //   })
-  //   .lean()
-  //   .exec();
-  // return { items: normalizeRecipeArray(favourites) };
 }
