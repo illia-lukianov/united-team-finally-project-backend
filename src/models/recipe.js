@@ -17,6 +17,7 @@ const recipesSchema = new Schema(
         {
           id: { type: Schema.Types.ObjectId, ref: 'Ingredient', required: true },
           measure: { type: String, required: true },
+          unit: { type: String, required: true }
         },
         {
           _id: false,

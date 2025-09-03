@@ -44,6 +44,10 @@ export const recipeSchema = Joi.object({
         'string.base': 'Ingredient measure must be a string!',
         'any.required': 'Ingredient measure is required!',
       }),
+      unit: Joi.string().required().messages({
+        'string.base': 'Ingredient unit must be a string!',
+        'any.required': 'Ingredient unit is required!',
+      }),
     }),
   ),
   instructions: Joi.string().max(1200).required().messages({
@@ -91,6 +95,10 @@ export const updateRecipeSchema = Joi.object({
       measure: Joi.string().required().messages({
         'string.base': 'Ingredient measure must be a string!',
         'any.required': 'Ingredient measure is required!',
+      }),
+      unit: Joi.string().required().messages({
+        'string.base': 'Ingredient unit must be a string!',
+        'any.required': 'Ingredient unit is required!',
       }),
     }),
   ),
